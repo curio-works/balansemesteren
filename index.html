@@ -19,9 +19,19 @@
             border-radius: 10px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
-        /* Kontrollpanelet øverst */
+        
+        /* Bildeplass øverst for piksel-logo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            image-rendering: pixelated; /* Holder pikselkunst skarp */
+        }
+
         .kontroll-panel { 
-            border: 2px solid #ff00ff; 
             padding: 15px; 
             border-radius: 10px; 
             margin-bottom: 20px; 
@@ -30,6 +40,7 @@
             justify-content: space-between; 
             flex-wrap: wrap;
             gap: 15px;
+            background: #eaeaea;
         }
         button { 
             padding: 12px 20px; 
@@ -39,10 +50,14 @@
             border-radius: 5px; 
             border: none; 
         }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         #connectBtn { background: #333; color: white; }
-        #byttBtn { background: #ff00ff; color: white; }
+        #startBtn { background: #28a745; color: white; }
+        #byttBtn { background: #333; color: white; }
         
-        /* Grid-oppsett for de to grafene */
         .grafer { 
             display: flex; 
             gap: 20px; 
@@ -51,7 +66,6 @@
         .graf-boks { 
             flex: 1; 
             min-width: 300px; 
-            border: 1px solid #ccc; 
             padding: 15px; 
             border-radius: 10px; 
             background: #fafafa; 
@@ -63,9 +77,20 @@
             background: white; 
         }
         
-        /* Visuelle tilstander for aktiv/inaktiv graf */
-        .aktiv { border: 3px solid #ff00ff; opacity: 1; }
+        .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .inaktiv { border: 1px solid #ccc; opacity: 0.4; }
+        
+        .score-tavle {
+            background: #111;
+            color: #0f0; 
+            text-align: center;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 24px;
+            border: 3px solid #333;
+        }
         
         .bytt-knapp-container { text-align: center; margin-top: 20px; }
     </style>
@@ -73,45 +98,55 @@
 <body>
 
     <div class="container">
-        <!-- Hovedkontroller -->
+        <!-- Logoen plasseres her -->
+        <div class="logo-container">
+            <img src="balansemesteren-logo.webp" alt="Balansemesteren">
+        </div>
+
         <div class="kontroll-panel">
             <div>
                 <button id="connectBtn">1. Koble til USB-mottaker</button>
                 <span id="statusTekst" style="margin-left: 15px; font-weight: bold; color: #666;">Frakoblet</span>
             </div>
             <div>
-                <span style="font-size: 18px;">Mottar data for: </span>
-                <strong id="aktivRundeTekst" style="font-size: 18px; color: #ff00ff;">Uten vekt</strong>
+                <button id="startBtn" disabled>2. Start test (15 sek)</button>
+                <span id="tidtakerTekst" style="margin-left: 15px; font-weight: bold; font-size: 18px; width: 80px; display: inline-block;">Tid: 15s</span>
+            </div>
+            <div>
+                <span style="font-size: 18px;">Aktiv: </span>
+                <strong id="aktivRundeTekst" style="font-size: 18px;">Uten vekt</strong>
             </div>
         </div>
 
-        <!-- Visningsvinduene -->
         <div class="grafer">
             <div class="graf-boks aktiv" id="boksUtenVekt">
                 <h2 style="text-align: center; margin-top: 0;">Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
+                <div class="score-tavle">Stabilitet: <span id="scoreUten">--</span>%</div>
             </div>
             
             <div class="graf-boks inaktiv" id="boksMedVekt">
                 <h2 style="text-align: center; margin-top: 0;">Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
+                <div class="score-tavle">Stabilitet: <span id="scoreMed">--</span>%</div>
             </div>
         </div>
 
-        <!-- Bryter -->
         <div class="bytt-knapp-container">
             <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
         </div>
     </div>
 
     <script>
-        // 1. Variabler for tilstand og datalagring
         let aktivRunde = 'uten_vekt';
         let historikkUtenVekt = [];
         let historikkMedVekt = [];
         let gjeldendeX = 0;
+        
+        let timerKjorer = false;
+        let gjenvaerendeTid = 15;
+        let timerIntervall;
 
-        // 2. HTML-elementer
         const canvasUtenVekt = document.getElementById('canvasUtenVekt');
         const ctxUten = canvasUtenVekt.getContext('2d');
         const canvasMedVekt = document.getElementById('canvasMedVekt');
@@ -119,18 +154,23 @@
         
         const statusTekst = document.getElementById('statusTekst');
         const aktivRundeTekst = document.getElementById('aktivRundeTekst');
+        const tidtakerTekst = document.getElementById('tidtakerTekst');
+        
+        const connectBtn = document.getElementById('connectBtn');
+        const startBtn = document.getElementById('startBtn');
         const byttBtn = document.getElementById('byttBtn');
         const boksUtenVekt = document.getElementById('boksUtenVekt');
         const boksMedVekt = document.getElementById('boksMedVekt');
+        
+        const scoreUten = document.getElementById('scoreUten');
+        const scoreMed = document.getElementById('scoreMed');
 
-        // 3. Felles tegnefunksjon som kan brukes av begge grafene
         function tegnGraf(ctx, historikk) {
             const bredde = 500;
             const hoyde = 500;
             
             ctx.clearRect(0, 0, bredde, hoyde);
             
-            // Tegner rutenett
             ctx.strokeStyle = '#e0e0e0';
             ctx.lineWidth = 1;
             for (let i = 1; i < 4; i++) {
@@ -138,12 +178,10 @@
                 ctx.beginPath(); ctx.moveTo(0, i * (hoyde/4)); ctx.lineTo(bredde, i * (hoyde/4)); ctx.stroke();
             }
             
-            // Sentrumsakser
             ctx.strokeStyle = '#999';
             ctx.beginPath(); ctx.moveTo(bredde/2, 0); ctx.lineTo(bredde/2, hoyde); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(0, hoyde/2); ctx.lineTo(bredde, hoyde/2); ctx.stroke();
 
-            // Tegner streken
             if (historikk.length > 1) {
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
@@ -155,7 +193,6 @@
                 ctx.stroke();
             }
 
-            // Tegner rød markør på gjeldende posisjon
             if (historikk.length > 0) {
                 const siste = historikk[historikk.length - 1];
                 ctx.fillStyle = 'red';
@@ -165,12 +202,66 @@
             }
         }
 
-        // Tegner tomme nett ved oppstart
         tegnGraf(ctxUten, historikkUtenVekt);
         tegnGraf(ctxMed, historikkMedVekt);
 
-        // 4. Logikk for å bytte hvilket vindu som er aktivt
+        startBtn.addEventListener('click', () => {
+            if (timerKjorer) return;
+            
+            if (aktivRunde === 'uten_vekt') {
+                historikkUtenVekt = [];
+                scoreUten.innerText = '--';
+                tegnGraf(ctxUten, historikkUtenVekt);
+            } else {
+                historikkMedVekt = [];
+                scoreMed.innerText = '--';
+                tegnGraf(ctxMed, historikkMedVekt);
+            }
+
+            timerKjorer = true;
+            gjenvaerendeTid = 15;
+            tidtakerTekst.innerText = `Tid: ${gjenvaerendeTid}s`;
+            
+            startBtn.disabled = true;
+            byttBtn.disabled = true;
+
+            timerIntervall = setInterval(() => {
+                gjenvaerendeTid--;
+                tidtakerTekst.innerText = `Tid: ${gjenvaerendeTid}s`;
+                
+                if (gjenvaerendeTid <= 0) {
+                    clearInterval(timerIntervall);
+                    timerKjorer = false;
+                    startBtn.disabled = false;
+                    byttBtn.disabled = false;
+                    tidtakerTekst.innerText = "Ferdig!";
+                    
+                    let aktivHistorikk = aktivRunde === 'uten_vekt' ? historikkUtenVekt : historikkMedVekt;
+                    let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
+                    
+                    if (aktivHistorikk.length > 0) {
+                        let totalAvstand = 0;
+                        for (let pkt of aktivHistorikk) {
+                            let dx = pkt.x - 250;
+                            let dy = pkt.y - 250;
+                            totalAvstand += Math.sqrt(dx * dx + dy * dy);
+                        }
+                        
+                        let snittAvstand = totalAvstand / aktivHistorikk.length;
+                        let stabilitet = 100 - ((snittAvstand / 250) * 100);
+                        if (stabilitet < 0) stabilitet = 0;
+                        
+                        aktivScoreFelt.innerText = stabilitet.toFixed(1);
+                    } else {
+                        aktivScoreFelt.innerText = "0.0";
+                    }
+                }
+            }, 1000);
+        });
+
         byttBtn.addEventListener('click', () => {
+            if (timerKjorer) return; 
+            
             if (aktivRunde === 'uten_vekt') {
                 aktivRunde = 'med_vekt';
                 aktivRundeTekst.innerText = 'Med vekt';
@@ -192,14 +283,14 @@
             }
         });
 
-        // 5. Oppkobling mot micro:bit via Web Serial
-        document.getElementById('connectBtn').addEventListener('click', async () => {
+        connectBtn.addEventListener('click', async () => {
             try {
                 const port = await navigator.serial.requestPort();
                 await port.open({ baudRate: 115200 });
                 
                 statusTekst.innerText = "Tilkoblet";
                 statusTekst.style.color = "green";
+                startBtn.disabled = false; 
 
                 const textDecoder = new TextDecoderStream();
                 port.readable.pipeTo(textDecoder.writable);
@@ -218,26 +309,23 @@
                     for (let linje of linjer) {
                         linje = linje.trim();
                         
-                        // Parse X-verdi
                         if (linje.includes('Tilt_X:')) {
-                            gjeldendeX = parseFloat(linje.replace('Tilt_X:', ''));
+                            gjeldendeX = parseFloat(linje.split('Tilt_X:')[1]);
                         } 
-                        // Parse Z-verdi (Y-akse) og plot punktet
                         else if (linje.includes('Tilt_Z:')) {
-                            const gjeldendeZ = parseFloat(linje.replace('Tilt_Z:', ''));
+                            const gjeldendeZ = parseFloat(linje.split('Tilt_Z:')[1]);
 
-                            const xPos = ((gjeldendeX + 1100) / 2200) * 500;
-                            const yPos = ((1100 - gjeldendeZ) / 2200) * 500;
+                            if (timerKjorer) {
+                                const xPos = ((gjeldendeX + 1100) / 2200) * 500;
+                                const yPos = ((1100 - gjeldendeZ) / 2200) * 500;
 
-                            // Ruter dataene til aktiv graf
-                            if (aktivRunde === 'uten_vekt') {
-                                historikkUtenVekt.push({ x: xPos, y: yPos });
-                                if (historikkUtenVekt.length > 500) historikkUtenVekt.shift();
-                                tegnGraf(ctxUten, historikkUtenVekt);
-                            } else {
-                                historikkMedVekt.push({ x: xPos, y: yPos });
-                                if (historikkMedVekt.length > 500) historikkMedVekt.shift();
-                                tegnGraf(ctxMed, historikkMedVekt);
+                                if (aktivRunde === 'uten_vekt') {
+                                    historikkUtenVekt.push({ x: xPos, y: yPos });
+                                    tegnGraf(ctxUten, historikkUtenVekt);
+                                } else {
+                                    historikkMedVekt.push({ x: xPos, y: yPos });
+                                    tegnGraf(ctxMed, historikkMedVekt);
+                                }
                             }
                         }
                     }
