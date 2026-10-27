@@ -9,10 +9,10 @@
             font-family: sans-serif; 
             background-color: #f4f4f9; 
             margin: 0; 
-            padding: 20px; 
+            padding: 15px; 
         }
         .container { 
-            max-width: 1100px; 
+            max-width: 1350px; /* Gjort bredere for å få plass til lister på sidene */
             margin: 0 auto; 
             background: white; 
             padding: 20px; 
@@ -22,7 +22,7 @@
         
         .logo-container {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .logo-container img {
             max-width: 100%;
@@ -33,7 +33,7 @@
         .kontroll-panel { 
             padding: 15px; 
             border-radius: 10px; 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
@@ -41,6 +41,22 @@
             gap: 15px;
             background: #eaeaea;
         }
+        
+        .start-gruppe {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #navneFelt {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 180px;
+        }
+
         button { 
             padding: 12px 20px; 
             font-size: 16px; 
@@ -57,17 +73,53 @@
         #startBtn { background: #28a745; color: white; }
         #byttBtn { background: #333; color: white; }
         
+        /* Oppdatert oppsett for 5 kolonner */
         .grafer { 
             display: flex; 
-            gap: 20px; 
+            gap: 15px; 
             justify-content: center;
-            align-items: center; 
+            align-items: flex-start; /* Sørger for at boksene henger fra toppen */
             flex-wrap: wrap; 
         }
+        
+        /* Design på poenglistene på sidene */
+        .liste-boks {
+            flex: 1;
+            min-width: 160px;
+            max-width: 220px;
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 430px; /* Gjør at listen ruller inni boksen, ikke på nettsiden */
+            overflow-y: auto;
+        }
+        .liste-boks h3 {
+            margin-top: 0;
+            font-size: 16px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            color: #333;
+        }
+        .resultat-liste {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .resultat-liste li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f4f4f9;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
         .graf-boks { 
-            flex: 1; 
-            min-width: 250px;
-            max-width: 350px; 
+            flex: 2; 
+            min-width: 220px;
+            max-width: 320px; 
             padding: 15px; 
             border-radius: 10px; 
             background: #fafafa; 
@@ -78,16 +130,18 @@
             border: 1px solid #ddd; 
             background: white; 
             border-radius: 5px;
+            aspect-ratio: 1 / 1;
         }
         
         .illustrasjon-midten {
             flex: 1;
-            min-width: 120px;
-            max-width: 250px;
+            min-width: 130px;
+            max-width: 180px;
             text-align: center;
+            align-self: center; /* Holder illustrasjonen sentrert vertikalt */
         }
         .illustrasjon-midten img {
-            max-width: 120px; /* Her styrer du nøyaktig hvor stort bildet av hånden skal være */
+            max-width: 100%; 
             height: auto;
         }
 
@@ -98,11 +152,11 @@
             background: #111;
             color: #0f0; 
             text-align: center;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 10px;
+            margin-top: 10px;
             border-radius: 5px;
             font-family: monospace;
-            font-size: 24px;
+            font-size: 20px;
             border: 3px solid #333;
         }
         
@@ -118,12 +172,13 @@
 
         <div class="kontroll-panel">
             <div>
-                <button id="connectBtn">1. Koble til USB-mottaker</button>
+                <button id="connectBtn">1. Koble til USB</button>
                 <span id="statusTekst" style="margin-left: 15px; font-weight: bold; color: #666;">Frakoblet</span>
             </div>
-            <div>
-                <button id="startBtn" disabled>2. Start test (15 sek)</button>
-                <span id="tidtakerTekst" style="margin-left: 15px; font-weight: bold; font-size: 18px; width: 80px; display: inline-block;">Tid: 15s</span>
+            <div class="start-gruppe">
+                <input type="text" id="navneFelt" placeholder="Deltakernavn">
+                <button id="startBtn" disabled>2. Start test (15s)</button>
+                <span id="tidtakerTekst" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 70px; display: inline-block;">Tid: 15s</span>
             </div>
             <div>
                 <span style="font-size: 18px;">Aktiv: </span>
@@ -132,20 +187,35 @@
         </div>
 
         <div class="grafer">
+            <!-- Liste venstre (Uten vekt) -->
+            <div class="liste-boks">
+                <h3>Poeng Uten Vekt</h3>
+                <ul class="resultat-liste" id="listeUten"></ul>
+            </div>
+
+            <!-- Graf venstre -->
             <div class="graf-boks aktiv" id="boksUtenVekt">
                 <h2 style="text-align: center; margin-top: 0;">Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
-                <div class="score-tavle">Stabilitet: <span id="scoreUten">--</span>%</div>
+                <div class="score-tavle">Score: <span id="scoreUten">--</span>%</div>
             </div>
             
+            <!-- Hånd-illustrasjon midten -->
             <div class="illustrasjon-midten">
                 <img src="balanse-haand.webp" alt="Illustrasjon av hånd som balanserer stang">
             </div>
 
+            <!-- Graf høyre -->
             <div class="graf-boks inaktiv" id="boksMedVekt">
                 <h2 style="text-align: center; margin-top: 0;">Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
-                <div class="score-tavle">Stabilitet: <span id="scoreMed">--</span>%</div>
+                <div class="score-tavle">Score: <span id="scoreMed">--</span>%</div>
+            </div>
+
+            <!-- Liste høyre (Med vekt) -->
+            <div class="liste-boks">
+                <h3>Poeng Med Vekt</h3>
+                <ul class="resultat-liste" id="listeMed"></ul>
             </div>
         </div>
 
@@ -172,6 +242,7 @@
         const statusTekst = document.getElementById('statusTekst');
         const aktivRundeTekst = document.getElementById('aktivRundeTekst');
         const tidtakerTekst = document.getElementById('tidtakerTekst');
+        const navneFelt = document.getElementById('navneFelt');
         
         const connectBtn = document.getElementById('connectBtn');
         const startBtn = document.getElementById('startBtn');
@@ -181,6 +252,8 @@
         
         const scoreUten = document.getElementById('scoreUten');
         const scoreMed = document.getElementById('scoreMed');
+        const listeUten = document.getElementById('listeUten');
+        const listeMed = document.getElementById('listeMed');
 
         function tegnGraf(ctx, historikk) {
             const bredde = 500;
@@ -241,6 +314,7 @@
             
             startBtn.disabled = true;
             byttBtn.disabled = true;
+            navneFelt.disabled = true;
 
             timerIntervall = setInterval(() => {
                 gjenvaerendeTid--;
@@ -251,10 +325,14 @@
                     timerKjorer = false;
                     startBtn.disabled = false;
                     byttBtn.disabled = false;
+                    navneFelt.disabled = false;
                     tidtakerTekst.innerText = "Ferdig!";
                     
                     let aktivHistorikk = aktivRunde === 'uten_vekt' ? historikkUtenVekt : historikkMedVekt;
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
+                    let aktivListe = aktivRunde === 'uten_vekt' ? listeUten : listeMed;
+                    let spillerNavn = navneFelt.value.trim() || 'Gjest';
+                    let sluttPoeng = "0.0";
                     
                     if (aktivHistorikk.length > 0) {
                         let totalAvstand = 0;
@@ -266,4 +344,47 @@
                         
                         let snittAvstand = totalAvstand / aktivHistorikk.length;
                         let stabilitet = 100 - ((snittAvstand / 250) * 100);
-                        if (stabilit
+                        if (stabilitet < 0) stabilitet = 0;
+                        
+                        sluttPoeng = stabilitet.toFixed(1);
+                    }
+                    
+                    // Oppdater storskjermen
+                    aktivScoreFelt.innerText = sluttPoeng;
+                    
+                    // Legg til i resultatlisten
+                    let li = document.createElement('li');
+                    let spanNavn = document.createElement('span');
+                    spanNavn.innerText = spillerNavn;
+                    let spanScore = document.createElement('strong');
+                    spanScore.innerText = sluttPoeng + '%';
+                    
+                    li.appendChild(spanNavn);
+                    li.appendChild(spanScore);
+                    aktivListe.appendChild(li);
+                    
+                    // Tøm navnefeltet slik at det er klart for neste deltaker
+                    navneFelt.value = '';
+                }
+            }, 1000);
+        });
+
+        byttBtn.addEventListener('click', () => {
+            if (timerKjorer) return; 
+            
+            if (aktivRunde === 'uten_vekt') {
+                aktivRunde = 'med_vekt';
+                aktivRundeTekst.innerText = 'Med vekt';
+                byttBtn.innerText = 'Bytt til "Uten vekt" ↔️';
+                
+                boksUtenVekt.classList.remove('aktiv');
+                boksUtenVekt.classList.add('inaktiv');
+                boksMedVekt.classList.remove('inaktiv');
+                boksMedVekt.classList.add('aktiv');
+            } else {
+                aktivRunde = 'uten_vekt';
+                aktivRundeTekst.innerText = 'Uten vekt';
+                byttBtn.innerText = 'Bytt til "Med vekt" ↔️';
+                
+                boksMedVekt.classList.remove('aktiv');
+                boksMedVekt.classList.add('inaktiv');
