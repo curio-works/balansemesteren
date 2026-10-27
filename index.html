@@ -20,7 +20,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         
-        /* Bildeplass øverst for piksel-logo */
         .logo-container {
             text-align: center;
             margin-bottom: 20px;
@@ -28,7 +27,7 @@
         .logo-container img {
             max-width: 100%;
             height: auto;
-            image-rendering: pixelated; /* Holder pikselkunst skarp */
+            image-rendering: pixelated; 
         }
 
         .kontroll-panel { 
@@ -58,18 +57,17 @@
         #startBtn { background: #28a745; color: white; }
         #byttBtn { background: #333; color: white; }
         
-        /* Oppdatert oppsett for de tre kolonnene */
         .grafer { 
             display: flex; 
             gap: 20px; 
             justify-content: center;
-            align-items: center; /* Sentrerer alt i høyden */
+            align-items: center; 
             flex-wrap: wrap; 
         }
         .graf-boks { 
             flex: 1; 
             min-width: 250px;
-            max-width: 350px; /* Gjør grafene litt mindre */
+            max-width: 350px; 
             padding: 15px; 
             border-radius: 10px; 
             background: #fafafa; 
@@ -82,15 +80,14 @@
             border-radius: 5px;
         }
         
-        /* Ny midtkolonne for hånden */
         .illustrasjon-midten {
             flex: 1;
-            min-width: 200px;
-            max-width: 300px;
+            min-width: 150px;
+            max-width: 250px;
             text-align: center;
         }
         .illustrasjon-midten img {
-            max-width: 100%;
+            max-width: 180px; /* Her styrer du nøyaktig hvor stort bildet av hånden skal være */
             height: auto;
         }
 
@@ -115,7 +112,6 @@
 <body>
 
     <div class="container">
-        <!-- Logo øverst -->
         <div class="logo-container">
             <img src="balansemesteren-logo.webp" alt="Balansemesteren">
         </div>
@@ -136,19 +132,16 @@
         </div>
 
         <div class="grafer">
-            <!-- Venstre graf -->
             <div class="graf-boks aktiv" id="boksUtenVekt">
                 <h2 style="text-align: center; margin-top: 0;">Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Stabilitet: <span id="scoreUten">--</span>%</div>
             </div>
             
-            <!-- Hånd-illustrasjonen i midten -->
             <div class="illustrasjon-midten">
                 <img src="balanse-haand.webp" alt="Illustrasjon av hånd som balanserer stang">
             </div>
 
-            <!-- Høyre graf -->
             <div class="graf-boks inaktiv" id="boksMedVekt">
                 <h2 style="text-align: center; margin-top: 0;">Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
@@ -273,93 +266,4 @@
                         
                         let snittAvstand = totalAvstand / aktivHistorikk.length;
                         let stabilitet = 100 - ((snittAvstand / 250) * 100);
-                        if (stabilitet < 0) stabilitet = 0;
-                        
-                        aktivScoreFelt.innerText = stabilitet.toFixed(1);
-                    } else {
-                        aktivScoreFelt.innerText = "0.0";
-                    }
-                }
-            }, 1000);
-        });
-
-        byttBtn.addEventListener('click', () => {
-            if (timerKjorer) return; 
-            
-            if (aktivRunde === 'uten_vekt') {
-                aktivRunde = 'med_vekt';
-                aktivRundeTekst.innerText = 'Med vekt';
-                byttBtn.innerText = 'Bytt til "Uten vekt" ↔️';
-                
-                boksUtenVekt.classList.remove('aktiv');
-                boksUtenVekt.classList.add('inaktiv');
-                boksMedVekt.classList.remove('inaktiv');
-                boksMedVekt.classList.add('aktiv');
-            } else {
-                aktivRunde = 'uten_vekt';
-                aktivRundeTekst.innerText = 'Uten vekt';
-                byttBtn.innerText = 'Bytt til "Med vekt" ↔️';
-                
-                boksMedVekt.classList.remove('aktiv');
-                boksMedVekt.classList.add('inaktiv');
-                boksUtenVekt.classList.remove('inaktiv');
-                boksUtenVekt.classList.add('aktiv');
-            }
-        });
-
-        connectBtn.addEventListener('click', async () => {
-            try {
-                const port = await navigator.serial.requestPort();
-                await port.open({ baudRate: 115200 });
-                
-                statusTekst.innerText = "Tilkoblet";
-                statusTekst.style.color = "green";
-                startBtn.disabled = false; 
-
-                const textDecoder = new TextDecoderStream();
-                port.readable.pipeTo(textDecoder.writable);
-                const reader = textDecoder.readable.getReader();
-                
-                let buffer = "";
-
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    
-                    buffer += value;
-                    let linjer = buffer.split('\n');
-                    buffer = linjer.pop();
-
-                    for (let linje of linjer) {
-                        linje = linje.trim();
-                        
-                        if (linje.includes('Tilt_X:')) {
-                            gjeldendeX = parseFloat(linje.split('Tilt_X:')[1]);
-                        } 
-                        else if (linje.includes('Tilt_Z:')) {
-                            const gjeldendeZ = parseFloat(linje.split('Tilt_Z:')[1]);
-
-                            if (timerKjorer) {
-                                const xPos = ((gjeldendeX + 1100) / 2200) * 500;
-                                const yPos = ((1100 - gjeldendeZ) / 2200) * 500;
-
-                                if (aktivRunde === 'uten_vekt') {
-                                    historikkUtenVekt.push({ x: xPos, y: yPos });
-                                    tegnGraf(ctxUten, historikkUtenVekt);
-                                } else {
-                                    historikkMedVekt.push({ x: xPos, y: yPos });
-                                    tegnGraf(ctxMed, historikkMedVekt);
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (feil) {
-                console.error("Seriell feil:", feil);
-                statusTekst.innerText = "Tilkoblingsfeil";
-                statusTekst.style.color = "red";
-            }
-        });
-    </script>
-</body>
-</html>
+                        if (stabilit
