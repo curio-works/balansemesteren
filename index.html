@@ -12,14 +12,35 @@
             padding: 15px; 
         }
         .container { 
+            position: relative; 
             max-width: 1350px; 
-            margin: 0 auto; 
+            margin: 40px auto 20px auto; 
             background: white; 
             padding: 20px; 
             border-radius: 10px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         
+        /* Det nye bakgrunnsbildet - nå mindre og helt skarpt */
+        .bakgrunns-bilde {
+            position: absolute;
+            top: -40px; /* Justert litt ned siden bildet er mindre */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0; 
+            pointer-events: none; 
+        }
+        .bakgrunns-bilde img {
+            width: 150px; /* Gjort en god del mindre (var 280px) */
+            height: auto;
+            opacity: 1; /* Helt synlig, ingen gjennomsiktighet */
+        }
+
+        .logo-container, .kontroll-panel, .grafer {
+            position: relative;
+            z-index: 2;
+        }
+
         .logo-container {
             text-align: center;
             margin-bottom: 15px;
@@ -42,6 +63,13 @@
             background: #eaeaea;
         }
         
+        .tilkobling-gruppe {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
         .start-gruppe {
             display: flex;
             align-items: center;
@@ -135,12 +163,6 @@
             flex: 1;
             min-width: 130px;
             max-width: 180px;
-            text-align: center;
-            align-self: center; 
-        }
-        .illustrasjon-midten img {
-            max-width: 100%; 
-            height: auto;
         }
 
         .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -148,7 +170,7 @@
         
         .score-tavle {
             background: #111;
-            color: #2196F3; /* Blåfargen fra V1-koden din */
+            color: #2196F3;
             text-align: center;
             padding: 10px;
             margin-top: 10px;
@@ -157,27 +179,33 @@
             font-size: 20px;
             border: 3px solid #333;
         }
-        
-        .bytt-knapp-container { text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        
+        <div class="bakgrunns-bilde">
+            <img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon">
+        </div>
+
         <div class="logo-container">
             <img src="balansemesteren-logo.webp" alt="Balansemesteren">
         </div>
 
         <div class="kontroll-panel">
-            <div>
+            <div class="tilkobling-gruppe">
                 <button id="connectBtn">1. Koble til USB</button>
-                <span id="statusTekst" style="margin-left: 15px; font-weight: bold; color: #666;">Frakoblet</span>
+                <span id="statusTekst" style="font-weight: bold; color: #666; min-width: 80px;">Frakoblet</span>
+                <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
             </div>
+            
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
                 <button id="startBtn" disabled>2. Start test (15s)</button>
                 <span id="tidtakerTekst" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 70px; display: inline-block;">Tid: 15s</span>
             </div>
+            
             <div>
                 <span style="font-size: 18px;">Aktiv: </span>
                 <strong id="aktivRundeTekst" style="font-size: 18px;">Uten vekt</strong>
@@ -185,45 +213,33 @@
         </div>
 
         <div class="grafer">
-            <!-- Liste venstre -->
             <div class="liste-boks">
                 <h3>Poeng Uten Vekt</h3>
                 <ul class="resultat-liste" id="listeUten"></ul>
             </div>
 
-            <!-- Graf venstre -->
             <div class="graf-boks aktiv" id="boksUtenVekt">
                 <h2 style="text-align: center; margin-top: 0;">Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreUten">0</span></div>
             </div>
             
-            <!-- Hånd-illustrasjon midten -->
-            <div class="illustrasjon-midten">
-                <img src="balanse-haand.webp" alt="Illustrasjon av hånd som balanserer stang">
-            </div>
+            <div class="illustrasjon-midten"></div>
 
-            <!-- Graf høyre -->
             <div class="graf-boks inaktiv" id="boksMedVekt">
                 <h2 style="text-align: center; margin-top: 0;">Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreMed">0</span></div>
             </div>
 
-            <!-- Liste høyre -->
             <div class="liste-boks">
                 <h3>Poeng Med Vekt</h3>
                 <ul class="resultat-liste" id="listeMed"></ul>
             </div>
         </div>
-
-        <div class="bytt-knapp-container">
-            <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
-        </div>
     </div>
 
     <script>
-        // === VARIABLER FRA DIN V1-KODE ===
         let port;
         let reader;
         
@@ -236,18 +252,16 @@
         let totalDistance = 0;
         let readingCount = 0;
         
-        // === VARIABLER FOR GRENSESNITTET ===
         let aktivRunde = 'uten_vekt';
         let historikkUtenVekt = [];
         let historikkMedVekt = [];
-        const maxDataPoints = 150; // Maks prikker for å unngå rot
+        const maxDataPoints = 150; 
         
         let timerKjorer = false;
         let testDuration = 15;
         let gjenvaerendeTid = testDuration;
         let timerIntervall;
 
-        // Referanser til HTML-elementene
         const canvasUtenVekt = document.getElementById('canvasUtenVekt');
         const ctxUten = canvasUtenVekt.getContext('2d');
         const canvasMedVekt = document.getElementById('canvasMedVekt');
@@ -269,13 +283,11 @@
         const listeUten = document.getElementById('listeUten');
         const listeMed = document.getElementById('listeMed');
 
-        // === TEGNEFUNKSJON FOR GRAFENE ===
         function tegnGraf(ctx, historikk) {
             const bredde = 500;
             const hoyde = 500;
             ctx.clearRect(0, 0, bredde, hoyde);
             
-            // Tegn rutenett
             ctx.strokeStyle = '#e0e0e0';
             ctx.lineWidth = 1;
             for (let i = 1; i < 4; i++) {
@@ -283,12 +295,10 @@
                 ctx.beginPath(); ctx.moveTo(0, i * (hoyde/4)); ctx.lineTo(bredde, i * (hoyde/4)); ctx.stroke();
             }
             
-            // Senterkors
             ctx.strokeStyle = '#999';
             ctx.beginPath(); ctx.moveTo(bredde/2, 0); ctx.lineTo(bredde/2, hoyde); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(0, hoyde/2); ctx.lineTo(bredde, hoyde/2); ctx.stroke();
 
-            // Tegn selve prikkene og streken (rød)
             if (historikk.length > 1) {
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(255, 99, 132, 0.8)';
@@ -312,7 +322,6 @@
         tegnGraf(ctxUten, historikkUtenVekt);
         tegnGraf(ctxMed, historikkMedVekt);
 
-        // === BYTT MODUS-KNAPP ===
         byttBtn.addEventListener('click', () => {
             if (timerKjorer) return; 
             if (aktivRunde === 'uten_vekt') {
@@ -330,7 +339,6 @@
             }
         });
 
-        // === KOBLE TIL MICRO:BIT (Din kode fra V1) ===
         connectBtn.addEventListener('click', async () => {
             try {
                 port = await navigator.serial.requestPort();
@@ -364,7 +372,6 @@
             }
         });
 
-        // === DATA-HÅNDTERING (Din kode fra V1) ===
         function parseAndDrawXY(line) {
             let parts = line.split(":");
             if (parts.length === 2) {
@@ -378,7 +385,6 @@
                     lastX = value;
                     
                     if (timerKjorer) {
-                        // Din auto-kalibrering
                         if (!isCalibrated) {
                             offsetX = lastX;
                             offsetY = lastY;
@@ -388,7 +394,6 @@
                         let adjustedX = lastX - offsetX;
                         let adjustedY = lastY - offsetY;
 
-                        // Din score-utregning
                         let distance = Math.sqrt((adjustedX * adjustedX) + (adjustedY * adjustedY));
                         totalDistance += distance;
                         readingCount++;
@@ -397,11 +402,9 @@
                         let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                         aktivScoreFelt.innerText = Math.round(averageWobble);
                         
-                        // Konverterer "adjusted" til canvas-koordinater (250 er midten av canvaset)
                         const xPos = 250 + ((adjustedX / 1100) * 250);
                         const yPos = 250 + ((adjustedY / 1100) * 250);
 
-                        // Tegner grafen på riktig skjerm
                         if (aktivRunde === 'uten_vekt') {
                             historikkUtenVekt.push({ x: xPos, y: yPos });
                             if (historikkUtenVekt.length > maxDataPoints) historikkUtenVekt.shift();
@@ -416,11 +419,9 @@
             }
         }
 
-        // === START TEST-KNAPP ===
         startBtn.addEventListener('click', () => {
             if (timerKjorer) return;
             
-            // Nullstill variabler og kalibrering
             timerKjorer = true;
             isCalibrated = false; 
             totalDistance = 0;
@@ -456,7 +457,6 @@
                     navneFelt.disabled = false;
                     tidtakerTekst.innerText = "Ferdig!";
                     
-                    // Ferdig! Hent scoren og legg det i riktig liste
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                     let aktivListe = aktivRunde === 'uten_vekt' ? listeUten : listeMed;
                     let spillerNavn = navneFelt.value.trim() || 'Gjest';
@@ -472,7 +472,6 @@
                     li.appendChild(spanScore);
                     aktivListe.appendChild(li);
                     
-                    // Tømmer navnefeltet slik at det er klart for neste deltaker
                     navneFelt.value = '';
                 }
             }, 1000);
