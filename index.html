@@ -21,19 +21,25 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         
-        /* Det nye bakgrunnsbildet - nå mindre og helt skarpt */
+        /* Det nye bakgrunnsbildet - forankret i både topp og bunn */
         .bakgrunns-bilde {
             position: absolute;
-            top: -40px; /* Justert litt ned siden bildet er mindre */
+            top: 20px;    /* Låst til øvre indre kant */
+            bottom: 20px; /* Låst til nedre indre kant */
             left: 50%;
             transform: translateX(-50%);
             z-index: 0; 
             pointer-events: none; 
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Sentrerer bildet pent vertikalt */
         }
         .bakgrunns-bilde img {
-            width: 150px; /* Gjort en god del mindre (var 280px) */
+            max-width: 150px; 
+            max-height: 100%; /* NØKKELEN: Bildet kan aldri bryte ut av høyden til containeren */
             height: auto;
-            opacity: 1; /* Helt synlig, ingen gjennomsiktighet */
+            object-fit: contain; /* Sørger for at proporsjonene ikke blir strekt */
+            opacity: 1; 
         }
 
         .logo-container, .kontroll-panel, .grafer {
