@@ -112,7 +112,7 @@
             display: flex; 
             gap: 10px; 
             justify-content: center;
-            align-items: flex-start; 
+            align-items: stretch; 
             flex-wrap: wrap; 
         }
         
@@ -121,11 +121,11 @@
             min-width: 150px;
             max-width: 200px;
             background: #fff;
-            border: 2px solid #eee;
             border-radius: 10px;
             padding: 10px; 
-            max-height: 350px; 
+            max-height: 420px; 
             overflow-y: auto;
+            transition: all 0.3s ease; /* For myk ned-dimming */
         }
         .liste-boks h3 {
             margin-top: 0;
@@ -187,8 +187,17 @@
             max-width: 150px;
         }
 
-        .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .inaktiv { border: 1px solid #ccc; opacity: 0.4; }
+        /* --- AKTIV / INAKTIV STYRING --- */
+        .aktiv { 
+            border: 2px solid #333; 
+            opacity: 1; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .inaktiv { 
+            border: 2px solid #333; /* Samme svarte, tykke strek */
+            opacity: 0.4;           /* Demper ned innholdet */
+            box-shadow: none;
+        }
         
         .score-tavle {
             background: #111;
@@ -238,7 +247,7 @@
         }
         .tidtaker-tekst-felles {
             font-variant-numeric: tabular-nums;
-            white-space: nowrap; /* Tvinger teksten til å holde seg på én linje */
+            white-space: nowrap; 
         }
 
         /* --- STIL NÅR GRAFEN ER I FULLSKJERM --- */
@@ -349,7 +358,6 @@
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
                 <button class="start-test-trigger" disabled>2. Start test (15s)</button>
-                <!-- Økte width til 75px for å gi Poppins den ekstra pusteplassen den trengte -->
                 <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 75px; display: inline-block;">Tid: 15s</span>
             </div>
             
@@ -360,7 +368,8 @@
         </div>
 
         <div class="grafer">
-            <div class="liste-boks">
+            <!-- Tillagt id og aktiv-klasse på listene -->
+            <div class="liste-boks aktiv" id="listeBoksUtenVekt">
                 <h3>Poeng Uten Vekt</h3>
                 <ul class="resultat-liste" id="listeUten"></ul>
             </div>
@@ -393,7 +402,8 @@
                 </div>
             </div>
 
-            <div class="liste-boks">
+            <!-- Tillagt id og inaktiv-klasse på listene -->
+            <div class="liste-boks inaktiv" id="listeBoksMedVekt">
                 <h3>Poeng Med Vekt</h3>
                 <ul class="resultat-liste" id="listeMed"></ul>
             </div>
@@ -436,6 +446,8 @@
         const byttBtn = document.getElementById('byttBtn');
         const boksUtenVekt = document.getElementById('boksUtenVekt');
         const boksMedVekt = document.getElementById('boksMedVekt');
+        const listeBoksUtenVekt = document.getElementById('listeBoksUtenVekt');
+        const listeBoksMedVekt = document.getElementById('listeBoksMedVekt');
         
         const scoreUten = document.getElementById('scoreUten');
         const scoreMed = document.getElementById('scoreMed');
@@ -520,14 +532,22 @@
                 aktivRunde = 'med_vekt';
                 aktivRundeTekst.innerText = 'Med vekt';
                 byttBtn.innerText = 'Bytt til "Uten vekt" ↔️';
+                
                 boksUtenVekt.classList.replace('aktiv', 'inaktiv');
+                listeBoksUtenVekt.classList.replace('aktiv', 'inaktiv');
+                
                 boksMedVekt.classList.replace('inaktiv', 'aktiv');
+                listeBoksMedVekt.classList.replace('inaktiv', 'aktiv');
             } else {
                 aktivRunde = 'uten_vekt';
                 aktivRundeTekst.innerText = 'Uten vekt';
                 byttBtn.innerText = 'Bytt til "Med vekt" ↔️';
+                
                 boksMedVekt.classList.replace('aktiv', 'inaktiv');
+                listeBoksMedVekt.classList.replace('aktiv', 'inaktiv');
+                
                 boksUtenVekt.classList.replace('inaktiv', 'aktiv');
+                listeBoksUtenVekt.classList.replace('inaktiv', 'aktiv');
             }
         });
 
