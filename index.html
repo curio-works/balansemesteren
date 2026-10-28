@@ -238,6 +238,7 @@
         }
         .tidtaker-tekst-felles {
             font-variant-numeric: tabular-nums;
+            white-space: nowrap; /* Tvinger teksten til å holde seg på én linje */
         }
 
         /* --- STIL NÅR GRAFEN ER I FULLSKJERM --- */
@@ -348,7 +349,8 @@
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
                 <button class="start-test-trigger" disabled>2. Start test (15s)</button>
-                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 60px; display: inline-block;">Tid: 15s</span>
+                <!-- Økte width til 75px for å gi Poppins den ekstra pusteplassen den trengte -->
+                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 75px; display: inline-block;">Tid: 15s</span>
             </div>
             
             <div>
