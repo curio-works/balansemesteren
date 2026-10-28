@@ -9,22 +9,22 @@
             font-family: sans-serif; 
             background-color: #f4f4f9; 
             margin: 0; 
-            padding: 15px; 
+            padding: 10px; 
         }
         .container { 
             position: relative; 
-            max-width: 1350px; 
-            margin: 40px auto 20px auto; 
+            max-width: 1300px; 
+            margin: 15px auto; 
             background: white; 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 10px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         
         .bakgrunns-bilde {
             position: absolute;
-            top: 20px;    
-            bottom: 20px; 
+            top: 10px;    
+            bottom: 10px; 
             left: 50%;
             transform: translateX(-50%);
             z-index: 0; 
@@ -34,7 +34,7 @@
             align-items: center; 
         }
         .bakgrunns-bilde img {
-            max-width: 150px; 
+            max-width: 140px; 
             max-height: 100%; 
             height: auto;
             object-fit: contain; 
@@ -48,34 +48,28 @@
 
         .logo-container {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px; 
         }
         .logo-container img {
             max-width: 100%;
+            max-height: 120px; /* Doblet høyden fra 60px til 120px */
             height: auto;
             image-rendering: pixelated; 
         }
 
         .kontroll-panel { 
-            padding: 15px; 
+            padding: 10px 15px; 
             border-radius: 10px; 
             margin-bottom: 15px; 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             background: #eaeaea;
         }
         
-        .tilkobling-gruppe {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .start-gruppe {
+        .tilkobling-gruppe, .start-gruppe {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -83,16 +77,16 @@
         }
 
         #navneFelt {
-            padding: 12px;
-            font-size: 16px;
+            padding: 10px; 
+            font-size: 15px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            width: 180px;
+            width: 160px;
         }
 
         button { 
-            padding: 12px 20px; 
-            font-size: 16px; 
+            padding: 10px 15px; 
+            font-size: 15px; 
             cursor: pointer; 
             font-weight: bold; 
             border-radius: 5px; 
@@ -108,7 +102,7 @@
         
         .grafer { 
             display: flex; 
-            gap: 15px; 
+            gap: 10px; 
             justify-content: center;
             align-items: flex-start; 
             flex-wrap: wrap; 
@@ -116,21 +110,22 @@
         
         .liste-boks {
             flex: 1;
-            min-width: 160px;
-            max-width: 220px;
+            min-width: 150px;
+            max-width: 200px;
             background: #fff;
             border: 2px solid #eee;
             border-radius: 10px;
-            padding: 15px;
-            max-height: 480px; 
+            padding: 10px; 
+            max-height: 350px; 
             overflow-y: auto;
         }
         .liste-boks h3 {
             margin-top: 0;
-            font-size: 16px;
+            font-size: 15px;
             text-align: center;
             border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            padding-bottom: 5px; 
+            margin-bottom: 5px;
             color: #333;
         }
         .resultat-liste {
@@ -141,17 +136,17 @@
         .resultat-liste li {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #f4f4f9;
-            font-size: 14px;
+            font-size: 13px;
             font-family: monospace;
         }
 
         .graf-boks { 
             flex: 2; 
-            min-width: 220px;
-            max-width: 320px; 
-            padding: 15px; 
+            min-width: 200px;
+            max-width: 280px; 
+            padding: 10px; 
             border-radius: 10px; 
             background: #fafafa; 
             transition: all 0.3s ease;
@@ -159,10 +154,11 @@
             flex-direction: column;
         }
         
-        /* Flyttet standard-stilen for titlene hit */
         .graf-boks h2 {
             text-align: center;
             margin-top: 0;
+            margin-bottom: 5px; 
+            font-size: 1.2em;
         }
 
         canvas { 
@@ -175,8 +171,8 @@
         
         .illustrasjon-midten {
             flex: 1;
-            min-width: 130px;
-            max-width: 180px;
+            min-width: 100px;
+            max-width: 150px;
         }
 
         .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -186,18 +182,18 @@
             background: #111;
             color: #2196F3;
             text-align: center;
-            padding: 10px;
-            margin-top: 10px;
+            padding: 5px 10px; 
+            margin-top: 8px;
             border-radius: 5px;
             font-family: monospace;
-            font-size: 20px;
-            border: 3px solid #333;
+            font-size: 16px; 
+            border: 2px solid #333;
         }
 
         /* --- KONTROLLER UNDER GRAF --- */
         .fullskjerm-kontroller {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 8px; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -208,8 +204,8 @@
             background-color: #ddd;
             color: #333;
             border: none;
-            padding: 8px 12px;
-            font-size: 14px;
+            padding: 6px 12px; 
+            font-size: 13px;
             border-radius: 5px;
             cursor: pointer;
             transition: 0.2s;
@@ -228,20 +224,19 @@
             max-width: 100%;
             padding: 40px;
             box-sizing: border-box; 
-            position: relative; /* GJØR AT VI KAN PLASSERE TITTELEN NØYAKTIG */
+            position: relative; 
             
             display: grid;
             grid-template-columns: 250px 1fr 250px; 
-            grid-template-rows: 1fr; /* Én rad, alt sentreres på midten av skjermen */
+            grid-template-rows: 1fr; 
             align-items: center;
         }
         
-        /* Her skjer magien for overskriften: */
         .graf-boks:fullscreen h2 {
             position: absolute;
-            top: 100px;  /* NØYAKTIG 100 piksler fra toppen av skjermen */
-            left: 40px;  /* Samme avstand fra kanten som resten av venstre-menyen */
-            width: 250px; /* Låst til venstre kolonne-bredde */
+            top: 100px;  
+            left: 40px;  
+            width: 250px; 
             font-size: 3em; 
             margin: 0;
             text-align: center; 
@@ -261,7 +256,7 @@
             display: flex;
             flex-direction: column; 
             gap: 30px;
-            margin-top: 80px; /* Dytter knappene litt nedover slik at de ikke havner bak tittelen */
+            margin-top: 80px; 
             justify-content: center; 
         }
 
@@ -274,6 +269,7 @@
             display: flex;
             flex-direction: column; 
             justify-content: center; 
+            border-width: 3px; 
         }
 
         .graf-boks:fullscreen .score-tavle span {
@@ -328,12 +324,12 @@
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
                 <button class="start-test-trigger" disabled>2. Start test (15s)</button>
-                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 80px; display: inline-block;">Tid: 15s</span>
+                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 60px; display: inline-block;">Tid: 15s</span>
             </div>
             
             <div>
-                <span style="font-size: 18px;">Aktiv: </span>
-                <strong id="aktivRundeTekst" style="font-size: 18px;">Uten vekt</strong>
+                <span style="font-size: 16px;">Aktiv: </span>
+                <strong id="aktivRundeTekst" style="font-size: 16px;">Uten vekt</strong>
             </div>
         </div>
 
@@ -345,7 +341,6 @@
 
             <!-- GRAF-BOKS 1 (UTEN VEKT) -->
             <div class="graf-boks aktiv" id="boksUtenVekt">
-                <!-- Fjernet den problematiske style-koden herfra -->
                 <h2>Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreUten">0</span></div>
@@ -361,7 +356,6 @@
 
             <!-- GRAF-BOKS 2 (MED VEKT) -->
             <div class="graf-boks inaktiv" id="boksMedVekt">
-                <!-- Fjernet den problematiske style-koden herfra -->
                 <h2>Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreMed">0</span></div>
