@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Balansemesteren - Eksperiment</title>
+    
+    <!-- Henter Poppins fra Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body { 
-            font-family: sans-serif; 
+            font-family: 'Poppins', sans-serif; 
             background-color: #f4f4f9; 
             margin: 0; 
             padding: 10px; 
@@ -52,7 +58,7 @@
         }
         .logo-container img {
             max-width: 100%;
-            max-height: 120px; /* Doblet høyden fra 60px til 120px */
+            max-height: 120px; 
             height: auto;
             image-rendering: pixelated; 
         }
@@ -78,6 +84,7 @@
 
         #navneFelt {
             padding: 10px; 
+            font-family: 'Poppins', sans-serif;
             font-size: 15px;
             border-radius: 5px;
             border: 1px solid #ccc;
@@ -86,9 +93,10 @@
 
         button { 
             padding: 10px 15px; 
+            font-family: 'Poppins', sans-serif;
             font-size: 15px; 
             cursor: pointer; 
-            font-weight: bold; 
+            font-weight: 600; 
             border-radius: 5px; 
             border: none; 
         }
@@ -122,6 +130,7 @@
         .liste-boks h3 {
             margin-top: 0;
             font-size: 15px;
+            font-weight: 700;
             text-align: center;
             border-bottom: 2px solid #eee;
             padding-bottom: 5px; 
@@ -139,7 +148,9 @@
             padding: 6px 0;
             border-bottom: 1px solid #f4f4f9;
             font-size: 13px;
-            font-family: monospace;
+        }
+        .resultat-liste li strong {
+            font-family: monospace; 
         }
 
         .graf-boks { 
@@ -156,6 +167,7 @@
         
         .graf-boks h2 {
             text-align: center;
+            font-weight: 700;
             margin-top: 0;
             margin-bottom: 5px; 
             font-size: 1.2em;
@@ -185,9 +197,14 @@
             padding: 5px 10px; 
             margin-top: 8px;
             border-radius: 5px;
-            font-family: monospace;
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 600;
             font-size: 16px; 
             border: 2px solid #333;
+        }
+        
+        .score-tavle span {
+            font-family: monospace; 
         }
 
         /* --- KONTROLLER UNDER GRAF --- */
@@ -214,6 +231,13 @@
 
         .start-fullskjerm-btn, .tid-visning-fullskjerm {
             display: none; 
+        }
+        
+        .tid-visning-fullskjerm {
+            font-variant-numeric: tabular-nums; 
+        }
+        .tidtaker-tekst-felles {
+            font-variant-numeric: tabular-nums;
         }
 
         /* --- STIL NÅR GRAFEN ER I FULLSKJERM --- */
@@ -275,7 +299,7 @@
         .graf-boks:fullscreen .score-tavle span {
             display: block; 
             font-size: 80px; 
-            font-weight: bold;
+            font-weight: 700;
             margin-top: 15px;
         }
 
@@ -297,7 +321,7 @@
         .graf-boks:fullscreen .tid-visning-fullskjerm {
             display: block;
             font-size: 32px;
-            font-weight: bold;
+            font-weight: 700;
             color: #333;
         }
     </style>
@@ -317,14 +341,14 @@
         <div class="kontroll-panel">
             <div class="tilkobling-gruppe">
                 <button id="connectBtn">1. Koble til USB</button>
-                <span id="statusTekst" style="font-weight: bold; color: #666; min-width: 80px;">Frakoblet</span>
+                <span id="statusTekst" style="font-weight: 700; color: #666; min-width: 80px;">Frakoblet</span>
                 <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
             </div>
             
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
                 <button class="start-test-trigger" disabled>2. Start test (15s)</button>
-                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 60px; display: inline-block;">Tid: 15s</span>
+                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 60px; display: inline-block;">Tid: 15s</span>
             </div>
             
             <div>
