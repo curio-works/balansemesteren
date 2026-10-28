@@ -13,7 +13,10 @@
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            background-color: #f4f4f9; 
+            /* NY GRADIENT-BAKGRUNN */
+            background: linear-gradient(to bottom, #21a3c0, #093E4A);
+            min-height: 100vh;
+            background-attachment: fixed;
             margin: 0; 
             padding: 10px; 
         }
@@ -72,7 +75,7 @@
             justify-content: space-between; 
             flex-wrap: wrap;
             gap: 10px;
-            background: #eaeaea;
+            background: #92D3E2; 
         }
         
         .tilkobling-gruppe, .start-gruppe {
@@ -99,14 +102,26 @@
             font-weight: 600; 
             border-radius: 5px; 
             border: none; 
+            transition: all 0.2s ease;
         }
         button:disabled {
-            opacity: 0.5;
             cursor: not-allowed;
         }
-        #connectBtn { background: #333; color: white; }
-        .start-test-trigger { background: #28a745; color: white; }
-        #byttBtn { background: #333; color: white; }
+        
+        /* --- KNAPPEFARGER --- */
+        #connectBtn, #byttBtn { background: #165B6A; color: white; }
+        
+        /* Solide farger for inaktive knapper slik at de ser like ut uansett bakgrunn */
+        #connectBtn:disabled, #byttBtn:disabled { 
+            background: #8aadb4 !important; 
+            color: rgba(255, 255, 255, 0.7) !important; 
+        }
+
+        .start-test-trigger { background: #093E4A !important; color: white !important; } 
+        .start-test-trigger:disabled { 
+            background: #849ea4 !important; 
+            color: rgba(255, 255, 255, 0.7) !important; 
+        }
         
         .grafer { 
             display: flex; 
@@ -125,7 +140,7 @@
             padding: 10px; 
             max-height: 420px; 
             overflow-y: auto;
-            transition: all 0.3s ease; /* For myk ned-dimming */
+            transition: all 0.3s ease; 
         }
         .liste-boks h3 {
             margin-top: 0;
@@ -163,6 +178,7 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         
         .graf-boks h2 {
@@ -171,6 +187,11 @@
             margin-top: 0;
             margin-bottom: 5px; 
             font-size: 1.2em;
+        }
+        
+        /* Skjules i normalvisning */
+        .spiller-navn-display {
+            display: none; 
         }
 
         canvas { 
@@ -194,14 +215,14 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
         }
         .inaktiv { 
-            border: 2px solid #333; /* Samme svarte, tykke strek */
-            opacity: 0.4;           /* Demper ned innholdet */
+            border: 2px solid #333; 
+            opacity: 0.4;           
             box-shadow: none;
         }
         
         .score-tavle {
-            background: #111;
-            color: #2196F3;
+            background: #165B6A; 
+            color: white; 
             text-align: center;
             padding: 5px 10px; 
             margin-top: 8px;
@@ -209,7 +230,8 @@
             font-family: 'Poppins', sans-serif; 
             font-weight: 600;
             font-size: 16px; 
-            border: 2px solid #333;
+            border: none; 
+            box-sizing: border-box; 
         }
         
         .score-tavle span {
@@ -224,19 +246,21 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
+            width: 100%; 
         }
         
         .fullskjerm-btn {
-            background-color: #ddd;
+            background-color: #92D3E2; 
             color: #333;
             border: none;
             padding: 6px 12px; 
             font-size: 13px;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.2s;
+            width: 100%; 
+            box-sizing: border-box; 
         }
-        .fullskjerm-btn:hover { background-color: #ccc; }
+        .fullskjerm-btn:hover { background-color: #7FC0D0; } 
 
         .start-fullskjerm-btn, .tid-visning-fullskjerm {
             display: none; 
@@ -294,16 +318,42 @@
             justify-content: center; 
         }
 
-        .graf-boks:fullscreen .score-tavle {
+        /* Ny innpakning for høyre side i fullskjerm */
+        .hoyre-panel {
+            display: block; 
+            width: 100%;
+        }
+
+        .graf-boks:fullscreen .hoyre-panel {
             grid-column: 3;
-            grid-row: 1; 
-            font-size: 28px; 
-            padding: 30px;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 40px; 
+        }
+
+        /* NAVNET PÅ SPILLEREN I FULLSKJERM */
+        .graf-boks:fullscreen .spiller-navn-display {
+            display: block;
+            text-align: center;
+            font-size: 2.5em; 
+            font-weight: 700;
+            color: #093E4A; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            margin: 0;
+        }
+
+        .graf-boks:fullscreen .score-tavle {
+            font-size: 22px; 
+            padding: 20px;
             margin-top: 0;
             display: flex;
             flex-direction: column; 
             justify-content: center; 
-            border-width: 3px; 
+            border: none; 
         }
 
         .graf-boks:fullscreen .score-tavle span {
@@ -316,9 +366,13 @@
         .graf-boks:fullscreen .fullskjerm-btn {
             font-size: 20px;
             padding: 15px 30px;
-            background-color: #e74c3c; 
+            background-color: #DF6C08; 
             color: white;
             width: 100%; 
+        }
+        .graf-boks:fullscreen .fullskjerm-btn:hover {
+            background-color: #E46B00; 
+            filter: brightness(1.15) saturate(1.2); 
         }
         
         .graf-boks:fullscreen .start-fullskjerm-btn {
@@ -326,6 +380,8 @@
             font-size: 20px;
             padding: 15px 30px;
             width: 100%;
+            background-color: #093E4A !important; 
+            color: white !important;
         }
         
         .graf-boks:fullscreen .tid-visning-fullskjerm {
@@ -351,7 +407,7 @@
         <div class="kontroll-panel">
             <div class="tilkobling-gruppe">
                 <button id="connectBtn">1. Koble til USB</button>
-                <span id="statusTekst" style="font-weight: 700; color: #666; min-width: 80px;">Frakoblet</span>
+                <span id="statusTekst" style="font-weight: 700; color: #333; min-width: 80px;">Frakoblet</span>
                 <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
             </div>
             
@@ -368,7 +424,6 @@
         </div>
 
         <div class="grafer">
-            <!-- Tillagt id og aktiv-klasse på listene -->
             <div class="liste-boks aktiv" id="listeBoksUtenVekt">
                 <h3>Poeng Uten Vekt</h3>
                 <ul class="resultat-liste" id="listeUten"></ul>
@@ -378,7 +433,11 @@
             <div class="graf-boks aktiv" id="boksUtenVekt">
                 <h2>Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
-                <div class="score-tavle">Vingle-score: <span id="scoreUten">0</span></div>
+                
+                <div class="hoyre-panel">
+                    <div class="spiller-navn-display" id="displayNavnUten"></div>
+                    <div class="score-tavle">Vinglescore: <span id="scoreUten">0</span></div>
+                </div>
                 
                 <div class="fullskjerm-kontroller">
                     <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
@@ -393,7 +452,11 @@
             <div class="graf-boks inaktiv" id="boksMedVekt">
                 <h2>Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
-                <div class="score-tavle">Vingle-score: <span id="scoreMed">0</span></div>
+                
+                <div class="hoyre-panel">
+                    <div class="spiller-navn-display" id="displayNavnMed"></div>
+                    <div class="score-tavle">Vinglescore: <span id="scoreMed">0</span></div>
+                </div>
                 
                 <div class="fullskjerm-kontroller">
                     <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
@@ -402,7 +465,6 @@
                 </div>
             </div>
 
-            <!-- Tillagt id og inaktiv-klasse på listene -->
             <div class="liste-boks inaktiv" id="listeBoksMedVekt">
                 <h3>Poeng Med Vekt</h3>
                 <ul class="resultat-liste" id="listeMed"></ul>
@@ -428,6 +490,9 @@
         let historikkMedVekt = [];
         const maxDataPoints = 150; 
         
+        let alleResultaterUten = [];
+        let alleResultaterMed = [];
+        
         let timerKjorer = false;
         let testDuration = 15;
         let gjenvaerendeTid = testDuration;
@@ -441,6 +506,16 @@
         const statusTekst = document.getElementById('statusTekst');
         const aktivRundeTekst = document.getElementById('aktivRundeTekst');
         const navneFelt = document.getElementById('navneFelt');
+        
+        const displayNavnUten = document.getElementById('displayNavnUten');
+        const displayNavnMed = document.getElementById('displayNavnMed');
+        
+        // Lytter på det som skrives i navnefeltet og oppdaterer storskjermen live
+        navneFelt.addEventListener('input', (e) => {
+            let n = e.target.value.trim();
+            displayNavnUten.innerText = n;
+            displayNavnMed.innerText = n;
+        });
         
         const connectBtn = document.getElementById('connectBtn');
         const byttBtn = document.getElementById('byttBtn');
@@ -464,7 +539,21 @@
             alleTidtakerTekster.forEach(el => el.innerText = tekst);
         }
 
-        // --- FULLSKJERM-LOGIKK ---
+        function tegnResultatListe(listeElement, resultater) {
+            listeElement.innerHTML = '';
+            resultater.forEach(res => {
+                let li = document.createElement('li');
+                let spanNavn = document.createElement('span');
+                spanNavn.innerText = res.navn;
+                let spanScore = document.createElement('strong');
+                spanScore.innerText = res.poeng;
+                
+                li.appendChild(spanNavn);
+                li.appendChild(spanScore);
+                listeElement.appendChild(li);
+            });
+        }
+
         function toggleFullskjerm(boksId) {
             const boks = document.getElementById(boksId);
             if (!document.fullscreenElement) {
@@ -556,8 +645,8 @@
                 port = await navigator.serial.requestPort();
                 await port.open({ baudRate: 115200 });
                 
-                statusTekst.innerText = "✅ Tilkoblet";
-                statusTekst.style.color = "#4CAF50";
+                statusTekst.innerText = "✓ Tilkoblet";
+                statusTekst.style.color = "#093E4A"; 
                 
                 settStartKnapper(false);
 
@@ -635,6 +724,10 @@
         function startEksperiment() {
             if (timerKjorer) return;
             
+            let startNavn = navneFelt.value.trim() || 'Gjest';
+            displayNavnUten.innerText = startNavn;
+            displayNavnMed.innerText = startNavn;
+            
             timerKjorer = true;
             isCalibrated = false; 
             totalDistance = 0;
@@ -672,18 +765,21 @@
                     
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                     let aktivListe = aktivRunde === 'uten_vekt' ? listeUten : listeMed;
+                    
                     let spillerNavn = navneFelt.value.trim() || 'Gjest';
-                    let sluttPoeng = aktivScoreFelt.innerText;
+                    let sluttPoeng = parseInt(aktivScoreFelt.innerText, 10);
                     
-                    let li = document.createElement('li');
-                    let spanNavn = document.createElement('span');
-                    spanNavn.innerText = spillerNavn;
-                    let spanScore = document.createElement('strong');
-                    spanScore.innerText = sluttPoeng;
+                    let nyttResultat = { navn: spillerNavn, poeng: sluttPoeng };
                     
-                    li.appendChild(spanNavn);
-                    li.appendChild(spanScore);
-                    aktivListe.appendChild(li);
+                    if (aktivRunde === 'uten_vekt') {
+                        alleResultaterUten.push(nyttResultat);
+                        alleResultaterUten.sort((a, b) => a.poeng - b.poeng);
+                        tegnResultatListe(listeUten, alleResultaterUten);
+                    } else {
+                        alleResultaterMed.push(nyttResultat);
+                        alleResultaterMed.sort((a, b) => a.poeng - b.poeng);
+                        tegnResultatListe(listeMed, alleResultaterMed);
+                    }
                     
                     navneFelt.value = '';
                 }
