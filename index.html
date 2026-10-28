@@ -21,24 +21,23 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         
-        /* Det nye bakgrunnsbildet - forankret i både topp og bunn */
         .bakgrunns-bilde {
             position: absolute;
-            top: 20px;    /* Låst til øvre indre kant */
-            bottom: 20px; /* Låst til nedre indre kant */
+            top: 20px;    
+            bottom: 20px; 
             left: 50%;
             transform: translateX(-50%);
             z-index: 0; 
             pointer-events: none; 
             display: flex;
             justify-content: center;
-            align-items: center; /* Sentrerer bildet pent vertikalt */
+            align-items: center; 
         }
         .bakgrunns-bilde img {
             max-width: 150px; 
-            max-height: 100%; /* NØKKELEN: Bildet kan aldri bryte ut av høyden til containeren */
+            max-height: 100%; 
             height: auto;
-            object-fit: contain; /* Sørger for at proporsjonene ikke blir strekt */
+            object-fit: contain; 
             opacity: 1; 
         }
 
@@ -104,7 +103,7 @@
             cursor: not-allowed;
         }
         #connectBtn { background: #333; color: white; }
-        #startBtn { background: #28a745; color: white; }
+        .start-test-trigger { background: #28a745; color: white; }
         #byttBtn { background: #333; color: white; }
         
         .grafer { 
@@ -123,7 +122,7 @@
             border: 2px solid #eee;
             border-radius: 10px;
             padding: 15px;
-            max-height: 430px; 
+            max-height: 480px; 
             overflow-y: auto;
         }
         .liste-boks h3 {
@@ -156,7 +155,16 @@
             border-radius: 10px; 
             background: #fafafa; 
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* Flyttet standard-stilen for titlene hit */
+        .graf-boks h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
         canvas { 
             width: 100%; 
             border: 1px solid #ddd; 
@@ -185,6 +193,117 @@
             font-size: 20px;
             border: 3px solid #333;
         }
+
+        /* --- KONTROLLER UNDER GRAF --- */
+        .fullskjerm-kontroller {
+            text-align: center;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .fullskjerm-btn {
+            background-color: #ddd;
+            color: #333;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .fullskjerm-btn:hover { background-color: #ccc; }
+
+        .start-fullskjerm-btn, .tid-visning-fullskjerm {
+            display: none; 
+        }
+
+        /* --- STIL NÅR GRAFEN ER I FULLSKJERM --- */
+        .graf-boks:fullscreen {
+            background: #fafafa;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            padding: 40px;
+            box-sizing: border-box; 
+            position: relative; /* GJØR AT VI KAN PLASSERE TITTELEN NØYAKTIG */
+            
+            display: grid;
+            grid-template-columns: 250px 1fr 250px; 
+            grid-template-rows: 1fr; /* Én rad, alt sentreres på midten av skjermen */
+            align-items: center;
+        }
+        
+        /* Her skjer magien for overskriften: */
+        .graf-boks:fullscreen h2 {
+            position: absolute;
+            top: 100px;  /* NØYAKTIG 100 piksler fra toppen av skjermen */
+            left: 40px;  /* Samme avstand fra kanten som resten av venstre-menyen */
+            width: 250px; /* Låst til venstre kolonne-bredde */
+            font-size: 3em; 
+            margin: 0;
+            text-align: center; 
+        }
+
+        .graf-boks:fullscreen canvas {
+            grid-column: 2; 
+            grid-row: 1; 
+            height: 90vh; 
+            width: auto;  
+            margin: 0 auto; 
+        }
+
+        .graf-boks:fullscreen .fullskjerm-kontroller {
+            grid-column: 1;
+            grid-row: 1; 
+            display: flex;
+            flex-direction: column; 
+            gap: 30px;
+            margin-top: 80px; /* Dytter knappene litt nedover slik at de ikke havner bak tittelen */
+            justify-content: center; 
+        }
+
+        .graf-boks:fullscreen .score-tavle {
+            grid-column: 3;
+            grid-row: 1; 
+            font-size: 28px; 
+            padding: 30px;
+            margin-top: 0;
+            display: flex;
+            flex-direction: column; 
+            justify-content: center; 
+        }
+
+        .graf-boks:fullscreen .score-tavle span {
+            display: block; 
+            font-size: 80px; 
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .graf-boks:fullscreen .fullskjerm-btn {
+            font-size: 20px;
+            padding: 15px 30px;
+            background-color: #e74c3c; 
+            color: white;
+            width: 100%; 
+        }
+        
+        .graf-boks:fullscreen .start-fullskjerm-btn {
+            display: block;
+            font-size: 20px;
+            padding: 15px 30px;
+            width: 100%;
+        }
+        
+        .graf-boks:fullscreen .tid-visning-fullskjerm {
+            display: block;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -208,8 +327,8 @@
             
             <div class="start-gruppe">
                 <input type="text" id="navneFelt" placeholder="Deltakernavn">
-                <button id="startBtn" disabled>2. Start test (15s)</button>
-                <span id="tidtakerTekst" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 70px; display: inline-block;">Tid: 15s</span>
+                <button class="start-test-trigger" disabled>2. Start test (15s)</button>
+                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: bold; font-size: 18px; width: 80px; display: inline-block;">Tid: 15s</span>
             </div>
             
             <div>
@@ -224,18 +343,34 @@
                 <ul class="resultat-liste" id="listeUten"></ul>
             </div>
 
+            <!-- GRAF-BOKS 1 (UTEN VEKT) -->
             <div class="graf-boks aktiv" id="boksUtenVekt">
-                <h2 style="text-align: center; margin-top: 0;">Uten vekt</h2>
+                <!-- Fjernet den problematiske style-koden herfra -->
+                <h2>Uten vekt</h2>
                 <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreUten">0</span></div>
+                
+                <div class="fullskjerm-kontroller">
+                    <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                    <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                    <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Forstørr ⛶</button>
+                </div>
             </div>
             
             <div class="illustrasjon-midten"></div>
 
+            <!-- GRAF-BOKS 2 (MED VEKT) -->
             <div class="graf-boks inaktiv" id="boksMedVekt">
-                <h2 style="text-align: center; margin-top: 0;">Med vekt</h2>
+                <!-- Fjernet den problematiske style-koden herfra -->
+                <h2>Med vekt</h2>
                 <canvas id="canvasMedVekt" width="500" height="500"></canvas>
                 <div class="score-tavle">Vingle-score: <span id="scoreMed">0</span></div>
+                
+                <div class="fullskjerm-kontroller">
+                    <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                    <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                    <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Forstørr ⛶</button>
+                </div>
             </div>
 
             <div class="liste-boks">
@@ -275,11 +410,9 @@
         
         const statusTekst = document.getElementById('statusTekst');
         const aktivRundeTekst = document.getElementById('aktivRundeTekst');
-        const tidtakerTekst = document.getElementById('tidtakerTekst');
         const navneFelt = document.getElementById('navneFelt');
         
         const connectBtn = document.getElementById('connectBtn');
-        const startBtn = document.getElementById('startBtn');
         const byttBtn = document.getElementById('byttBtn');
         const boksUtenVekt = document.getElementById('boksUtenVekt');
         const boksMedVekt = document.getElementById('boksMedVekt');
@@ -288,6 +421,39 @@
         const scoreMed = document.getElementById('scoreMed');
         const listeUten = document.getElementById('listeUten');
         const listeMed = document.getElementById('listeMed');
+
+        const alleStartKnapper = document.querySelectorAll('.start-test-trigger');
+        const alleTidtakerTekster = document.querySelectorAll('.tidtaker-tekst-felles');
+
+        function settStartKnapper(statusDisabled) {
+            alleStartKnapper.forEach(btn => btn.disabled = statusDisabled);
+        }
+        function oppdaterTidTekst(tekst) {
+            alleTidtakerTekster.forEach(el => el.innerText = tekst);
+        }
+
+        // --- FULLSKJERM-LOGIKK ---
+        function toggleFullskjerm(boksId) {
+            const boks = document.getElementById(boksId);
+            if (!document.fullscreenElement) {
+                boks.requestFullscreen().catch(err => {
+                    console.log(`Feil ved fullskjerm: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const alleFullskjermKnapper = document.querySelectorAll('.fullskjerm-btn');
+            if (document.fullscreenElement) {
+                const aktivBoks = document.fullscreenElement;
+                const knapp = aktivBoks.querySelector('.fullskjerm-btn');
+                if (knapp) knapp.innerText = "Forminsk ✖";
+            } else {
+                alleFullskjermKnapper.forEach(btn => btn.innerText = "Forstørr ⛶");
+            }
+        });
 
         function tegnGraf(ctx, historikk) {
             const bredde = 500;
@@ -352,7 +518,8 @@
                 
                 statusTekst.innerText = "✅ Tilkoblet";
                 statusTekst.style.color = "#4CAF50";
-                startBtn.disabled = false; 
+                
+                settStartKnapper(false);
 
                 const textDecoder = new TextDecoderStream();
                 port.readable.pipeTo(textDecoder.writable);
@@ -425,7 +592,7 @@
             }
         }
 
-        startBtn.addEventListener('click', () => {
+        function startEksperiment() {
             if (timerKjorer) return;
             
             timerKjorer = true;
@@ -444,24 +611,24 @@
             }
 
             gjenvaerendeTid = testDuration;
-            tidtakerTekst.innerText = `Tid: ${gjenvaerendeTid}s`;
+            oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
             
-            startBtn.disabled = true;
+            settStartKnapper(true);
             byttBtn.disabled = true;
             navneFelt.disabled = true;
 
             timerIntervall = setInterval(() => {
                 gjenvaerendeTid--;
-                tidtakerTekst.innerText = `Tid: ${gjenvaerendeTid}s`;
+                oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
                 
                 if (gjenvaerendeTid <= 0) {
                     clearInterval(timerIntervall);
                     timerKjorer = false;
                     
-                    startBtn.disabled = false;
+                    settStartKnapper(false);
                     byttBtn.disabled = false;
                     navneFelt.disabled = false;
-                    tidtakerTekst.innerText = "Ferdig!";
+                    oppdaterTidTekst("Ferdig!");
                     
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                     let aktivListe = aktivRunde === 'uten_vekt' ? listeUten : listeMed;
@@ -481,7 +648,12 @@
                     navneFelt.value = '';
                 }
             }, 1000);
+        }
+
+        alleStartKnapper.forEach(btn => {
+            btn.addEventListener('click', startEksperiment);
         });
+
     </script>
 </body>
 </html>
