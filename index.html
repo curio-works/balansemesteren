@@ -22,36 +22,52 @@
 
         .game-layout-wrapper {
             position: relative;
-            max-width: 1400px; 
+            max-width: 1600px; 
             margin: 0 auto;
+            padding: 15px 0; 
             display: flex;
-            align-items: center;
+            align-items: stretch; 
             justify-content: center;
-            gap: 20px;
+            gap: 15px; 
         }
 
         .side-banner {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
             font-family: 'Press Start 2P', monospace;
             color: #ff8800; 
-            font-size: 16px;
+            font-size: 20px; 
             cursor: pointer;
             writing-mode: vertical-rl;
+            text-orientation: upright; 
             text-shadow: 2px 2px 0px #000;
-            transition: color 0.2s, transform 0.2s;
-            padding: 20px;
+            transition: all 0.2s ease;
+            padding: 20px 25px; 
             user-select: none;
+            text-align: center;
+            letter-spacing: 8px; 
+            
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+            flex-shrink: 0; /* Sikrer at bannerne aldri klemmes sammen */
+            
             @media (max-width: 900px) { display: none; } 
         }
 
-        .right-banner:hover { color: #ffcc00; transform: scale(1.05); }
-        .left-banner { transform: rotate(180deg); }
-        .left-banner:hover { transform: rotate(180deg) scale(1.05); }
+        .side-banner:hover { 
+            color: #ffcc00; 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
 
         .container { 
             position: relative; 
             width: 100%;
-            max-width: 1300px; 
-            margin: 15px auto; 
+            max-width: 1400px; 
+            margin: 0; 
             background: white; 
             padding: 15px; 
             border-radius: 10px; 
@@ -77,29 +93,30 @@
 
         .kontroll-panel { 
             padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; display: flex; 
-            align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: #92D3E2; 
+            align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; background: #92D3E2; 
         }
         
-        .tilkobling-gruppe, .start-gruppe { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .tilkobling-gruppe, .start-gruppe { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         
-        #navneFelt { padding: 10px; font-family: 'Poppins', sans-serif; font-size: 15px; border-radius: 5px; border: 1px solid #ccc; width: 160px; }
-        button { padding: 10px 15px; font-family: 'Poppins', sans-serif; font-size: 15px; cursor: pointer; font-weight: 600; border-radius: 5px; border: none; transition: all 0.2s ease; }
+        #navneFelt { padding: 8px 10px; font-family: 'Poppins', sans-serif; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; width: 130px; }
+        button { padding: 8px 12px; font-family: 'Poppins', sans-serif; font-size: 14px; cursor: pointer; font-weight: 600; border-radius: 5px; border: none; transition: all 0.2s ease; }
         button:disabled { cursor: not-allowed; }
         
-        #connectBtn, #byttBtn { background: #165B6A; color: white; }
-        #connectBtn:disabled, #byttBtn:disabled { background: #8aadb4 !important; color: rgba(255, 255, 255, 0.7) !important; }
+        #connectBtn, #byttBtn, #resetBtn, #nedlastBtn { background: #165B6A; color: white; }
+        #connectBtn:disabled, #byttBtn:disabled, #resetBtn:disabled, #nedlastBtn:disabled { background: #8aadb4 !important; color: rgba(255, 255, 255, 0.7) !important; }
+        
         .start-test-trigger { background: #093E4A !important; color: white !important; } 
         .start-test-trigger:disabled { background: #849ea4 !important; color: rgba(255, 255, 255, 0.7) !important; }
         
         .grafer { display: flex; gap: 10px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
         
-        .liste-boks { flex: 1; min-width: 150px; max-width: 200px; background: #fff; border-radius: 10px; padding: 10px; max-height: 420px; overflow-y: auto; transition: all 0.3s ease; }
+        .liste-boks { flex: 1; min-width: 150px; background: #fff; border-radius: 10px; padding: 10px; overflow-y: auto; transition: all 0.3s ease; }
         .liste-boks h3 { margin-top: 0; font-size: 15px; font-weight: 700; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 5px; color: #333; }
         .resultat-liste { list-style: none; padding: 0; margin: 0; }
         .resultat-liste li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f4f4f9; font-size: 13px; }
         .resultat-liste li strong { font-family: monospace; }
 
-        .graf-boks { flex: 2; min-width: 200px; max-width: 280px; padding: 10px; border-radius: 10px; background: #fafafa; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; }
+        .graf-boks { flex: 2; min-width: 200px; padding: 10px; border-radius: 10px; background: #fafafa; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; }
         .graf-boks h2 { text-align: center; font-weight: 700; margin-top: 0; margin-bottom: 5px; font-size: 1.2em; }
         .spiller-navn-display { display: none; }
         canvas { width: 100%; border: 1px solid #ddd; background: white; border-radius: 5px; aspect-ratio: 1 / 1; }
@@ -115,7 +132,8 @@
         .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 6px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; }
         .fullskjerm-btn:hover { background-color: #7FC0D0; } 
         .start-fullskjerm-btn, .tid-visning-fullskjerm { display: none; }
-        .tid-visning-fullskjerm, .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .tid-visning-fullskjerm { font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 16px !important; }
 
         .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr; align-items: center; }
         .graf-boks:fullscreen h2 { position: absolute; top: 100px; left: 40px; width: 250px; font-size: 3em; margin: 0; text-align: center; }
@@ -161,7 +179,7 @@
 <body>
 
     <div class="game-layout-wrapper">
-        <div class="side-banner left-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
+        <div class="side-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
         
         <div class="container">
             <div class="bakgrunns-bilde"><img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon"></div>
@@ -173,12 +191,17 @@
                     <span id="statusTekst" style="font-weight: 700; color: #333; min-width: 80px;">Frakoblet</span>
                     <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
                 </div>
+                
                 <div class="start-gruppe">
                     <input type="text" id="navneFelt" placeholder="Deltakernavn">
                     <button class="start-test-trigger" disabled>Start test (15s)</button>
-                    <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 75px; display: inline-block;">Tid: 15s</span>
+                    <span class="tidtaker-tekst-felles" style="margin-left: 5px; font-weight: 700; width: 70px; display: inline-block;">Tid: 15s</span>
+                    
+                    <button id="resetBtn">Nullstill</button>
+                    <button id="nedlastBtn">Last ned data</button>
                 </div>
-                <div><span style="font-size: 16px;">Aktiv: </span><strong id="aktivRundeTekst" style="font-size: 16px;">Uten vekt</strong></div>
+                
+                <div><span style="font-size: 15px;">Aktiv: </span><strong id="aktivRundeTekst" style="font-size: 15px;">Uten vekt</strong></div>
             </div>
 
             <div class="grafer">
@@ -222,7 +245,7 @@
             </div>
         </div>
 
-        <div class="side-banner right-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
+        <div class="side-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
     </div>
 
     <!-- ARKADE POP-UP -->
@@ -328,7 +351,6 @@
             if (event.target === this) toggleModal();
         });
 
-        // Hjelpefunksjon for å telle opp tallene pent
         function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
             const step = (timestamp) => {
@@ -340,7 +362,6 @@
             window.requestAnimationFrame(step);
         }
 
-        // DENNE FUNKSJONEN REGNER UT OG OPPDATERER ARKADE-PANELET
         function oppdaterArkadePanel() {
             let snittUten = 0; let snittMed = 0;
             
@@ -413,11 +434,9 @@
                 tegnResultatListe(listeMed, alleResultaterMed);
             }
             
-            // Sørger for at arkadepanelet er utregnet og klart med en gang
             oppdaterArkadePanel();
         }
 
-        // Kjører lasting idet nettsiden åpnes
         document.addEventListener('DOMContentLoaded', lastFraLocalStorage);
 
 
@@ -458,6 +477,9 @@
         const listeUten = document.getElementById('listeUten'); const listeMed = document.getElementById('listeMed');
         const alleStartKnapper = document.querySelectorAll('.start-test-trigger');
         const alleTidtakerTekster = document.querySelectorAll('.tidtaker-tekst-felles');
+        
+        const resetBtn = document.getElementById('resetBtn'); 
+        const nedlastBtn = document.getElementById('nedlastBtn'); 
 
         function settStartKnapper(statusDisabled) { alleStartKnapper.forEach(btn => btn.disabled = statusDisabled); }
         function oppdaterTidTekst(tekst) { alleTidtakerTekster.forEach(el => el.innerText = tekst); }
@@ -594,7 +616,9 @@
             }
 
             gjenvaerendeTid = testDuration; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
-            settStartKnapper(true); byttBtn.disabled = true; navneFelt.disabled = true;
+            
+            settStartKnapper(true); byttBtn.disabled = true; navneFelt.disabled = true; 
+            resetBtn.disabled = true; nedlastBtn.disabled = true;
 
             timerIntervall = setInterval(() => {
                 gjenvaerendeTid--; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
@@ -604,7 +628,8 @@
                     
                     stopTiltSound(); playGameOverSound();
                     
-                    settStartKnapper(false); byttBtn.disabled = false; navneFelt.disabled = false;
+                    settStartKnapper(false); byttBtn.disabled = false; navneFelt.disabled = false; 
+                    resetBtn.disabled = false; nedlastBtn.disabled = false;
                     oppdaterTidTekst("Ferdig!");
                     
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
@@ -616,24 +641,61 @@
                     
                     if (aktivRunde === 'uten_vekt') {
                         alleResultaterUten.push(nyttResultat);
-                        alleResultaterUten.sort((a, b) => a.poeng - b.poeng); // Endret til stigende!
+                        alleResultaterUten.sort((a, b) => a.poeng - b.poeng);
                         tegnResultatListe(listeUten, alleResultaterUten);
                     } else {
                         alleResultaterMed.push(nyttResultat);
-                        alleResultaterMed.sort((a, b) => a.poeng - b.poeng); // Endret til stigende!
+                        alleResultaterMed.sort((a, b) => a.poeng - b.poeng);
                         tegnResultatListe(listeMed, alleResultaterMed);
                     }
                     navneFelt.value = '';
 
                     oppdaterArkadePanel();
-                    
-                    // LAGRER TIL LOCAL STORAGE HVER GANG EN RUNDE ER FERDIG
                     lagreTilLocalStorage();
                 }
             }, 1000);
         }
 
         alleStartKnapper.forEach(btn => { btn.addEventListener('click', startEksperiment); });
+
+        // --- FUNKSJON FOR Å NULLSTILLE DATA ---
+        resetBtn.addEventListener('click', () => {
+            if (confirm("Er du sikker på at du vil slette alle poeng og starte med blanke ark?")) {
+                localStorage.removeItem('balanseDataUten');
+                localStorage.removeItem('balanseDataMed');
+                
+                alleResultaterUten = [];
+                alleResultaterMed = [];
+                
+                tegnResultatListe(listeUten, alleResultaterUten);
+                tegnResultatListe(listeMed, alleResultaterMed);
+                
+                oppdaterArkadePanel();
+            }
+        });
+
+        // --- FUNKSJON FOR Å LASTE NED DATA (CSV) ---
+        nedlastBtn.addEventListener('click', () => {
+            let csvContent = "Modus,Navn,Vinglescore\n";
+
+            alleResultaterUten.forEach(res => {
+                csvContent += `Uten vekt,${res.navn},${res.poeng}\n`;
+            });
+
+            alleResultaterMed.forEach(res => {
+                csvContent += `Med vekt,${res.navn},${res.poeng}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "balansemesteren_resultater.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
     </script>
 </body>
 </html>
