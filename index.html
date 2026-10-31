@@ -5,564 +5,477 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Balansemesteren - Eksperiment</title>
     
-    <!-- Henter Poppins fra Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
         body { 
             font-family: 'Poppins', sans-serif; 
-            /* NY GRADIENT-BAKGRUNN */
             background: linear-gradient(to bottom, #21a3c0, #093E4A);
             min-height: 100vh;
             background-attachment: fixed;
             margin: 0; 
             padding: 10px; 
         }
+
+        .game-layout-wrapper {
+            position: relative;
+            max-width: 1400px; 
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .side-banner {
+            font-family: 'Press Start 2P', monospace;
+            color: #ff8800; 
+            font-size: 16px;
+            cursor: pointer;
+            writing-mode: vertical-rl;
+            text-shadow: 2px 2px 0px #000;
+            transition: color 0.2s, transform 0.2s;
+            padding: 20px;
+            user-select: none;
+            @media (max-width: 900px) { display: none; } 
+        }
+
+        .right-banner:hover { color: #ffcc00; transform: scale(1.05); }
+        .left-banner { transform: rotate(180deg); }
+        .left-banner:hover { transform: rotate(180deg) scale(1.05); }
+
         .container { 
             position: relative; 
+            width: 100%;
             max-width: 1300px; 
             margin: 15px auto; 
             background: white; 
             padding: 15px; 
             border-radius: 10px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            z-index: 10;
         }
         
         .bakgrunns-bilde {
             position: absolute;
-            top: 10px;    
-            bottom: 10px; 
-            left: 50%;
+            top: 10px; bottom: 10px; left: 50%;
             transform: translateX(-50%);
-            z-index: 0; 
-            pointer-events: none; 
-            display: flex;
-            justify-content: center;
-            align-items: center; 
+            z-index: 0; pointer-events: none; 
+            display: flex; justify-content: center; align-items: center; 
         }
         .bakgrunns-bilde img {
-            max-width: 140px; 
-            max-height: 100%; 
-            height: auto;
-            object-fit: contain; 
-            opacity: 1; 
+            max-width: 140px; max-height: 100%; height: auto;
+            object-fit: contain; opacity: 1; 
         }
 
-        .logo-container, .kontroll-panel, .grafer {
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 10px; 
-        }
-        .logo-container img {
-            max-width: 100%;
-            max-height: 120px; 
-            height: auto;
-            image-rendering: pixelated; 
-        }
+        .logo-container, .kontroll-panel, .grafer { position: relative; z-index: 2; }
+        .logo-container { text-align: center; margin-bottom: 10px; }
+        .logo-container img { max-width: 100%; max-height: 120px; height: auto; image-rendering: pixelated; }
 
         .kontroll-panel { 
-            padding: 10px 15px; 
-            border-radius: 10px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #92D3E2; 
+            padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; display: flex; 
+            align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: #92D3E2; 
         }
         
-        .tilkobling-gruppe, .start-gruppe {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        #navneFelt {
-            padding: 10px; 
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 160px;
-        }
-
-        button { 
-            padding: 10px 15px; 
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            border-radius: 5px; 
-            border: none; 
-            transition: all 0.2s ease;
-        }
-        button:disabled {
-            cursor: not-allowed;
-        }
+        .tilkobling-gruppe, .start-gruppe { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         
-        /* --- KNAPPEFARGER --- */
+        #navneFelt { padding: 10px; font-family: 'Poppins', sans-serif; font-size: 15px; border-radius: 5px; border: 1px solid #ccc; width: 160px; }
+        button { padding: 10px 15px; font-family: 'Poppins', sans-serif; font-size: 15px; cursor: pointer; font-weight: 600; border-radius: 5px; border: none; transition: all 0.2s ease; }
+        button:disabled { cursor: not-allowed; }
+        
         #connectBtn, #byttBtn { background: #165B6A; color: white; }
-        
-        /* Solide farger for inaktive knapper slik at de ser like ut uansett bakgrunn */
-        #connectBtn:disabled, #byttBtn:disabled { 
-            background: #8aadb4 !important; 
-            color: rgba(255, 255, 255, 0.7) !important; 
-        }
-
+        #connectBtn:disabled, #byttBtn:disabled { background: #8aadb4 !important; color: rgba(255, 255, 255, 0.7) !important; }
         .start-test-trigger { background: #093E4A !important; color: white !important; } 
-        .start-test-trigger:disabled { 
-            background: #849ea4 !important; 
-            color: rgba(255, 255, 255, 0.7) !important; 
-        }
+        .start-test-trigger:disabled { background: #849ea4 !important; color: rgba(255, 255, 255, 0.7) !important; }
         
-        .grafer { 
-            display: flex; 
-            gap: 10px; 
-            justify-content: center;
-            align-items: stretch; 
-            flex-wrap: wrap; 
-        }
+        .grafer { display: flex; gap: 10px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
         
-        .liste-boks {
-            flex: 1;
-            min-width: 150px;
-            max-width: 200px;
-            background: #fff;
-            border-radius: 10px;
-            padding: 10px; 
-            max-height: 420px; 
-            overflow-y: auto;
-            transition: all 0.3s ease; 
-        }
-        .liste-boks h3 {
-            margin-top: 0;
-            font-size: 15px;
-            font-weight: 700;
-            text-align: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 5px; 
-            margin-bottom: 5px;
-            color: #333;
-        }
-        .resultat-liste {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .resultat-liste li {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #f4f4f9;
-            font-size: 13px;
-        }
-        .resultat-liste li strong {
-            font-family: monospace; 
-        }
+        .liste-boks { flex: 1; min-width: 150px; max-width: 200px; background: #fff; border-radius: 10px; padding: 10px; max-height: 420px; overflow-y: auto; transition: all 0.3s ease; }
+        .liste-boks h3 { margin-top: 0; font-size: 15px; font-weight: 700; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 5px; color: #333; }
+        .resultat-liste { list-style: none; padding: 0; margin: 0; }
+        .resultat-liste li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f4f4f9; font-size: 13px; }
+        .resultat-liste li strong { font-family: monospace; }
 
-        .graf-boks { 
-            flex: 2; 
-            min-width: 200px;
-            max-width: 280px; 
-            padding: 10px; 
-            border-radius: 10px; 
-            background: #fafafa; 
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+        .graf-boks { flex: 2; min-width: 200px; max-width: 280px; padding: 10px; border-radius: 10px; background: #fafafa; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; }
+        .graf-boks h2 { text-align: center; font-weight: 700; margin-top: 0; margin-bottom: 5px; font-size: 1.2em; }
+        .spiller-navn-display { display: none; }
+        canvas { width: 100%; border: 1px solid #ddd; background: white; border-radius: 5px; aspect-ratio: 1 / 1; }
         
-        .graf-boks h2 {
-            text-align: center;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 5px; 
-            font-size: 1.2em;
-        }
+        .illustrasjon-midten { flex: 1; min-width: 100px; max-width: 150px; }
+        .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .inaktiv { border: 2px solid #333; opacity: 0.4; box-shadow: none; }
         
-        /* Skjules i normalvisning */
-        .spiller-navn-display {
-            display: none; 
-        }
+        .score-tavle { background: #165B6A; color: white; text-align: center; padding: 5px 10px; margin-top: 8px; border-radius: 5px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; box-sizing: border-box; }
+        .score-tavle span { font-family: monospace; }
 
-        canvas { 
-            width: 100%; 
-            border: 1px solid #ddd; 
-            background: white; 
-            border-radius: 5px;
-            aspect-ratio: 1 / 1;
-        }
-        
-        .illustrasjon-midten {
-            flex: 1;
-            min-width: 100px;
-            max-width: 150px;
-        }
-
-        /* --- AKTIV / INAKTIV STYRING --- */
-        .aktiv { 
-            border: 2px solid #333; 
-            opacity: 1; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-        }
-        .inaktiv { 
-            border: 2px solid #333; 
-            opacity: 0.4;           
-            box-shadow: none;
-        }
-        
-        .score-tavle {
-            background: #165B6A; 
-            color: white; 
-            text-align: center;
-            padding: 5px 10px; 
-            margin-top: 8px;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif; 
-            font-weight: 600;
-            font-size: 16px; 
-            border: none; 
-            box-sizing: border-box; 
-        }
-        
-        .score-tavle span {
-            font-family: monospace; 
-        }
-
-        /* --- KONTROLLER UNDER GRAF --- */
-        .fullskjerm-kontroller {
-            text-align: center;
-            margin-top: 8px; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%; 
-        }
-        
-        .fullskjerm-btn {
-            background-color: #92D3E2; 
-            color: #333;
-            border: none;
-            padding: 6px 12px; 
-            font-size: 13px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%; 
-            box-sizing: border-box; 
-        }
+        .fullskjerm-kontroller { text-align: center; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
+        .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 6px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; }
         .fullskjerm-btn:hover { background-color: #7FC0D0; } 
+        .start-fullskjerm-btn, .tid-visning-fullskjerm { display: none; }
+        .tid-visning-fullskjerm, .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-        .start-fullskjerm-btn, .tid-visning-fullskjerm {
-            display: none; 
-        }
+        .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr; align-items: center; }
+        .graf-boks:fullscreen h2 { position: absolute; top: 100px; left: 40px; width: 250px; font-size: 3em; margin: 0; text-align: center; }
+        .graf-boks:fullscreen canvas { grid-column: 2; grid-row: 1; height: 90vh; width: auto; margin: 0 auto; }
+        .graf-boks:fullscreen .fullskjerm-kontroller { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 30px; margin-top: 80px; justify-content: center; }
+        .hoyre-panel { display: block; width: 100%; }
+        .graf-boks:fullscreen .hoyre-panel { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
+        .graf-boks:fullscreen .spiller-navn-display { display: block; text-align: center; font-size: 2.5em; font-weight: 700; color: #093E4A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+        .graf-boks:fullscreen .score-tavle { font-size: 22px; padding: 20px; margin-top: 0; display: flex; flex-direction: column; justify-content: center; border: none; }
+        .graf-boks:fullscreen .score-tavle span { display: block; font-size: 80px; font-weight: 700; margin-top: 15px; }
+        .graf-boks:fullscreen .fullskjerm-btn { font-size: 20px; padding: 15px 30px; background-color: #DF6C08; color: white; width: 100%; }
+        .graf-boks:fullscreen .fullskjerm-btn:hover { background-color: #E46B00; filter: brightness(1.15) saturate(1.2); }
+        .graf-boks:fullscreen .start-fullskjerm-btn { display: block; font-size: 20px; padding: 15px 30px; width: 100%; background-color: #093E4A !important; color: white !important; }
+        .graf-boks:fullscreen .tid-visning-fullskjerm { display: block; font-size: 32px; font-weight: 700; color: #333; }
+
+        /* --- ARKADE POP-UP --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .curio-arcade-panel { font-family: 'Press Start 2P', monospace; background-color: #111; color: #fff; padding: 40px 20px 30px; border: 4px solid #444; border-radius: 4px; text-align: center; width: 100%; max-width: 650px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 15px rgba(0, 255, 255, 0.1); }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: #ff0055; font-size: 12px; cursor: pointer; transition: color 0.2s; }
+        .close-btn:hover { color: #fff; }
+        .arcade-header { font-size: 18px; color: #fce803; margin-bottom: 10px; text-shadow: 2px 2px 0px #ff0055; line-height: 1.4; }
+        .arcade-sub { font-size: 10px; color: #888; margin-bottom: 40px; line-height: 1.4; }
+        .chart-container { display: flex; justify-content: space-evenly; align-items: flex-end; height: 300px; padding-bottom: 20px; position: relative; }
+        .chart-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 20px 20px; z-index: 0; }
+        .data-column { display: flex; flex-direction: column; align-items: center; width: 100px; z-index: 1; }
+        .score-value { font-size: 14px; margin-bottom: 15px; text-shadow: 2px 2px 0px #000; }
+        .bar-wrapper { height: 220px; width: 60px; display: flex; align-items: flex-end; background-color: rgba(0, 0, 0, 0.5); border: 2px solid #333; }
+        .bar { width: 100%; height: 0%; transition: height 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .bar-low { background: repeating-linear-gradient(to top, #ff0055, #ff0055 10px, #222 10px, #222 14px); box-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
+        .bar-high { background: repeating-linear-gradient(to top, #00ffcc, #00ffcc 10px, #222 10px, #222 14px); box-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+        .col-label { font-size: 10px; margin-top: 15px; line-height: 1.6; color: #ccc; }
+        .highlight-low { color: #ff0055; } .highlight-high { color: #00ffcc; }
         
-        .tid-visning-fullskjerm {
-            font-variant-numeric: tabular-nums; 
-        }
-        .tidtaker-tekst-felles {
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap; 
-        }
-
-        /* --- STIL NÅR GRAFEN ER I FULLSKJERM --- */
-        .graf-boks:fullscreen {
-            background: #fafafa;
-            width: 100vw;
-            height: 100vh;
-            max-width: 100%;
-            padding: 40px;
-            box-sizing: border-box; 
-            position: relative; 
-            
-            display: grid;
-            grid-template-columns: 250px 1fr 250px; 
-            grid-template-rows: 1fr; 
-            align-items: center;
-        }
-        
-        .graf-boks:fullscreen h2 {
-            position: absolute;
-            top: 100px;  
-            left: 40px;  
-            width: 250px; 
-            font-size: 3em; 
-            margin: 0;
-            text-align: center; 
-        }
-
-        .graf-boks:fullscreen canvas {
-            grid-column: 2; 
-            grid-row: 1; 
-            height: 90vh; 
-            width: auto;  
-            margin: 0 auto; 
-        }
-
-        .graf-boks:fullscreen .fullskjerm-kontroller {
-            grid-column: 1;
-            grid-row: 1; 
-            display: flex;
-            flex-direction: column; 
-            gap: 30px;
-            margin-top: 80px; 
-            justify-content: center; 
-        }
-
-        /* Ny innpakning for høyre side i fullskjerm */
-        .hoyre-panel {
-            display: block; 
-            width: 100%;
-        }
-
-        .graf-boks:fullscreen .hoyre-panel {
-            grid-column: 3;
-            grid-row: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 40px; 
-        }
-
-        /* NAVNET PÅ SPILLEREN I FULLSKJERM */
-        .graf-boks:fullscreen .spiller-navn-display {
-            display: block;
-            text-align: center;
-            font-size: 2.5em; 
-            font-weight: 700;
-            color: #093E4A; 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; 
-            margin: 0;
-        }
-
-        .graf-boks:fullscreen .score-tavle {
-            font-size: 22px; 
-            padding: 20px;
-            margin-top: 0;
-            display: flex;
-            flex-direction: column; 
-            justify-content: center; 
-            border: none; 
-        }
-
-        .graf-boks:fullscreen .score-tavle span {
-            display: block; 
-            font-size: 80px; 
-            font-weight: 700;
-            margin-top: 15px;
-        }
-
-        .graf-boks:fullscreen .fullskjerm-btn {
-            font-size: 20px;
-            padding: 15px 30px;
-            background-color: #DF6C08; 
-            color: white;
-            width: 100%; 
-        }
-        .graf-boks:fullscreen .fullskjerm-btn:hover {
-            background-color: #E46B00; 
-            filter: brightness(1.15) saturate(1.2); 
-        }
-        
-        .graf-boks:fullscreen .start-fullskjerm-btn {
-            display: block;
-            font-size: 20px;
-            padding: 15px 30px;
-            width: 100%;
-            background-color: #093E4A !important; 
-            color: white !important;
-        }
-        
-        .graf-boks:fullscreen .tid-visning-fullskjerm {
-            display: block;
-            font-size: 32px;
-            font-weight: 700;
-            color: #333;
-        }
+        .leaderboard-container { border-top: 2px dashed #444; margin-top: 25px; padding-top: 25px; display: flex; justify-content: space-around; text-align: left; }
+        .leaderboard-col { width: 45%; }
+        .leaderboard-title { font-size: 10px; color: #fff; margin-bottom: 15px; text-align: center; line-height: 1.4; }
+        .score-row { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 12px; }
+        #low-rank-1, #high-rank-1 { color: #fce803; } #low-rank-2, #high-rank-2 { color: #bbb; } #low-rank-3, #high-rank-3 { color: #a67c00; }
+        .score-initials { color: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="game-layout-wrapper">
+        <div class="side-banner left-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
         
-        <div class="bakgrunns-bilde">
-            <img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon">
+        <div class="container">
+            <div class="bakgrunns-bilde"><img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon"></div>
+            <div class="logo-container"><img src="balansemesteren-logo.webp" alt="Balansemesteren"></div>
+
+            <div class="kontroll-panel">
+                <div class="tilkobling-gruppe">
+                    <button id="connectBtn">Koble til USB</button>
+                    <span id="statusTekst" style="font-weight: 700; color: #333; min-width: 80px;">Frakoblet</span>
+                    <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
+                </div>
+                <div class="start-gruppe">
+                    <input type="text" id="navneFelt" placeholder="Deltakernavn">
+                    <button class="start-test-trigger" disabled>Start test (15s)</button>
+                    <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 75px; display: inline-block;">Tid: 15s</span>
+                </div>
+                <div><span style="font-size: 16px;">Aktiv: </span><strong id="aktivRundeTekst" style="font-size: 16px;">Uten vekt</strong></div>
+            </div>
+
+            <div class="grafer">
+                <div class="liste-boks aktiv" id="listeBoksUtenVekt">
+                    <h3>Poeng Uten Vekt</h3>
+                    <ul class="resultat-liste" id="listeUten"></ul>
+                </div>
+                <div class="graf-boks aktiv" id="boksUtenVekt">
+                    <h2>Uten vekt</h2>
+                    <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
+                    <div class="hoyre-panel">
+                        <div class="spiller-navn-display" id="displayNavnUten"></div>
+                        <div class="score-tavle">Vinglescore: <span id="scoreUten">0</span></div>
+                    </div>
+                    <div class="fullskjerm-kontroller">
+                        <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                        <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Forstørr ⛶</button>
+                    </div>
+                </div>
+                
+                <div class="illustrasjon-midten"></div>
+
+                <div class="graf-boks inaktiv" id="boksMedVekt">
+                    <h2>Med vekt</h2>
+                    <canvas id="canvasMedVekt" width="500" height="500"></canvas>
+                    <div class="hoyre-panel">
+                        <div class="spiller-navn-display" id="displayNavnMed"></div>
+                        <div class="score-tavle">Vinglescore: <span id="scoreMed">0</span></div>
+                    </div>
+                    <div class="fullskjerm-kontroller">
+                        <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                        <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Forstørr ⛶</button>
+                    </div>
+                </div>
+                <div class="liste-boks inaktiv" id="listeBoksMedVekt">
+                    <h3>Poeng Med Vekt</h3>
+                    <ul class="resultat-liste" id="listeMed"></ul>
+                </div>
+            </div>
         </div>
 
-        <div class="logo-container">
-            <img src="balansemesteren-logo.webp" alt="Balansemesteren">
-        </div>
+        <div class="side-banner right-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
+    </div>
 
-        <div class="kontroll-panel">
-            <div class="tilkobling-gruppe">
-                <button id="connectBtn">1. Koble til USB</button>
-                <span id="statusTekst" style="font-weight: 700; color: #333; min-width: 80px;">Frakoblet</span>
-                <button id="byttBtn">Bytt til "Med vekt" ↔️</button>
-            </div>
+    <!-- ARKADE POP-UP -->
+    <div id="data-modal" class="modal-overlay">
+        <div class="curio-arcade-panel">
+            <div class="close-btn" onclick="toggleModal()">[X] LUKK</div>
+            <div class="arcade-header">NEWTON VS. INTUISJON</div>
+            <div class="arcade-sub">GJENNOMSNITTLIG VINGLESCORE (LAVERE ER BEDRE)</div>
             
-            <div class="start-gruppe">
-                <input type="text" id="navneFelt" placeholder="Deltakernavn">
-                <button class="start-test-trigger" disabled>2. Start test (15s)</button>
-                <span class="tidtaker-tekst-felles" style="margin-left: 10px; font-weight: 700; font-size: 18px; width: 75px; display: inline-block;">Tid: 15s</span>
-            </div>
-            
-            <div>
-                <span style="font-size: 16px;">Aktiv: </span>
-                <strong id="aktivRundeTekst" style="font-size: 16px;">Uten vekt</strong>
-            </div>
-        </div>
-
-        <div class="grafer">
-            <div class="liste-boks aktiv" id="listeBoksUtenVekt">
-                <h3>Poeng Uten Vekt</h3>
-                <ul class="resultat-liste" id="listeUten"></ul>
-            </div>
-
-            <!-- GRAF-BOKS 1 (UTEN VEKT) -->
-            <div class="graf-boks aktiv" id="boksUtenVekt">
-                <h2>Uten vekt</h2>
-                <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
-                
-                <div class="hoyre-panel">
-                    <div class="spiller-navn-display" id="displayNavnUten"></div>
-                    <div class="score-tavle">Vinglescore: <span id="scoreUten">0</span></div>
+            <div class="chart-container">
+                <div class="data-column">
+                    <div class="score-value highlight-low" id="counter-low">0</div>
+                    <div class="bar-wrapper">
+                        <div class="bar bar-low" id="graph-low" style="height: 0%;"></div>
+                    </div>
+                    <div class="col-label">UTEN<br>VEKT</div>
                 </div>
-                
-                <div class="fullskjerm-kontroller">
-                    <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
-                    <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                    <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Forstørr ⛶</button>
-                </div>
-            </div>
-            
-            <div class="illustrasjon-midten"></div>
-
-            <!-- GRAF-BOKS 2 (MED VEKT) -->
-            <div class="graf-boks inaktiv" id="boksMedVekt">
-                <h2>Med vekt</h2>
-                <canvas id="canvasMedVekt" width="500" height="500"></canvas>
-                
-                <div class="hoyre-panel">
-                    <div class="spiller-navn-display" id="displayNavnMed"></div>
-                    <div class="score-tavle">Vinglescore: <span id="scoreMed">0</span></div>
-                </div>
-                
-                <div class="fullskjerm-kontroller">
-                    <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
-                    <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                    <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Forstørr ⛶</button>
+                <div class="data-column">
+                    <div class="score-value highlight-high" id="counter-high">0</div>
+                    <div class="bar-wrapper">
+                        <div class="bar bar-high" id="graph-high" style="height: 0%;"></div>
+                    </div>
+                    <div class="col-label">MED<br>VEKT</div>
                 </div>
             </div>
 
-            <div class="liste-boks inaktiv" id="listeBoksMedVekt">
-                <h3>Poeng Med Vekt</h3>
-                <ul class="resultat-liste" id="listeMed"></ul>
+            <div class="leaderboard-container">
+                <div class="leaderboard-col">
+                    <div class="leaderboard-title">TOPP 3:<br>UTEN VEKT</div>
+                    <div class="score-row" id="low-rank-1"><span>1ST</span><span class="score-initials">---</span><span class="highlight-low">0</span></div>
+                    <div class="score-row" id="low-rank-2"><span>2ND</span><span class="score-initials">---</span><span class="highlight-low">0</span></div>
+                    <div class="score-row" id="low-rank-3"><span>3RD</span><span class="score-initials">---</span><span class="highlight-low">0</span></div>
+                </div>
+                <div class="leaderboard-col">
+                    <div class="leaderboard-title">TOPP 3:<br>MED VEKT</div>
+                    <div class="score-row" id="high-rank-1"><span>1ST</span><span class="score-initials">---</span><span class="highlight-high">0</span></div>
+                    <div class="score-row" id="high-rank-2"><span>2ND</span><span class="score-initials">---</span><span class="highlight-high">0</span></div>
+                    <div class="score-row" id="high-rank-3"><span>3RD</span><span class="score-initials">---</span><span class="highlight-high">0</span></div>
+                </div>
             </div>
         </div>
     </div>
 
+
     <script>
-        let port;
-        let reader;
+        // ==========================================
+        // 1. LYD-MOTOR
+        // ==========================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let tiltOscillator = null; let tiltGain = null;
+
+        function playStartSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'square'; osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(220, now); osc.frequency.setValueAtTime(440, now + 0.1); osc.frequency.setValueAtTime(880, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        }
+
+        function playGameOverSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.6);
+            gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+            osc.start(now); osc.stop(now + 0.6);
+        }
+
+        function startTiltSound() {
+            if (tiltOscillator) return; 
+            tiltOscillator = audioCtx.createOscillator(); tiltGain = audioCtx.createGain();
+            tiltOscillator.type = 'triangle'; tiltOscillator.connect(tiltGain); tiltGain.connect(audioCtx.destination);
+            tiltOscillator.frequency.value = 150; tiltGain.gain.value = 0.02; tiltOscillator.start();
+        }
+
+        function updateTiltSound(distance) {
+            if (!tiltOscillator || !tiltGain) return;
+            const nyFrekvens = 150 + (distance * 1.5); 
+            let nyttVolum = 0.02 + (distance * 0.0005); if (nyttVolum > 0.1) nyttVolum = 0.1; 
+            const now = audioCtx.currentTime;
+            tiltOscillator.frequency.setTargetAtTime(nyFrekvens, now, 0.05);
+            tiltGain.gain.setTargetAtTime(nyttVolum, now, 0.05);
+        }
+
+        function stopTiltSound() {
+            if (tiltOscillator) { tiltOscillator.stop(); tiltOscillator.disconnect(); tiltOscillator = null; }
+            if (tiltGain) { tiltGain.disconnect(); tiltGain = null; }
+        }
+
+
+        // ==========================================
+        // 2. MODAL & LOCALSTORAGE LOGIKK
+        // ==========================================
+        function toggleModal() {
+            const modal = document.getElementById("data-modal");
+            modal.classList.toggle("active");
+        }
         
-        let lastX = 0;
-        let lastY = 0;
-        let offsetX = 0;
-        let offsetY = 0;
-        let isCalibrated = false;
-        
-        let totalDistance = 0;
-        let readingCount = 0;
+        document.getElementById("data-modal").addEventListener("click", function(event) {
+            if (event.target === this) toggleModal();
+        });
+
+        // Hjelpefunksjon for å telle opp tallene pent
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.round(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // DENNE FUNKSJONEN REGNER UT OG OPPDATERER ARKADE-PANELET
+        function oppdaterArkadePanel() {
+            let snittUten = 0; let snittMed = 0;
+            
+            if (alleResultaterUten.length > 0) {
+                let sum = alleResultaterUten.reduce((total, res) => total + res.poeng, 0);
+                snittUten = sum / alleResultaterUten.length;
+            }
+            if (alleResultaterMed.length > 0) {
+                let sum = alleResultaterMed.reduce((total, res) => total + res.poeng, 0);
+                snittMed = sum / alleResultaterMed.length;
+            }
+
+            let dynamiskTak = Math.max(snittUten, snittMed, 100); 
+            
+            let prosentUten = (snittUten / dynamiskTak) * 100;
+            let prosentMed = (snittMed / dynamiskTak) * 100;
+            
+            if (alleResultaterUten.length === 0) prosentUten = 0;
+            if (alleResultaterMed.length === 0) prosentMed = 0;
+
+            document.getElementById('graph-low').style.height = prosentUten + '%';
+            document.getElementById('graph-high').style.height = prosentMed + '%';
+
+            animateValue(document.getElementById('counter-low'), 0, snittUten, 1500);
+            animateValue(document.getElementById('counter-high'), 0, snittMed, 1500);
+
+            for (let i = 0; i < 3; i++) {
+                let rad = document.getElementById(`low-rank-${i + 1}`);
+                let initialer = rad.querySelector('.score-initials');
+                let poeng = rad.querySelector('.highlight-low');
+
+                if (alleResultaterUten[i]) {
+                    initialer.innerText = alleResultaterUten[i].navn.substring(0, 3).toUpperCase();
+                    poeng.innerText = alleResultaterUten[i].poeng;
+                } else {
+                    initialer.innerText = "---"; poeng.innerText = "0";
+                }
+            }
+
+            for (let i = 0; i < 3; i++) {
+                let rad = document.getElementById(`high-rank-${i + 1}`);
+                let initialer = rad.querySelector('.score-initials');
+                let poeng = rad.querySelector('.highlight-high');
+
+                if (alleResultaterMed[i]) {
+                    initialer.innerText = alleResultaterMed[i].navn.substring(0, 3).toUpperCase();
+                    poeng.innerText = alleResultaterMed[i].poeng;
+                } else {
+                    initialer.innerText = "---"; poeng.innerText = "0";
+                }
+            }
+        }
+
+        // --- LOCAL STORAGE FUNKSJONER ---
+        function lagreTilLocalStorage() {
+            localStorage.setItem('balanseDataUten', JSON.stringify(alleResultaterUten));
+            localStorage.setItem('balanseDataMed', JSON.stringify(alleResultaterMed));
+        }
+
+        function lastFraLocalStorage() {
+            const lagretUten = localStorage.getItem('balanseDataUten');
+            const lagretMed = localStorage.getItem('balanseDataMed');
+
+            if (lagretUten) {
+                alleResultaterUten = JSON.parse(lagretUten);
+                tegnResultatListe(listeUten, alleResultaterUten);
+            }
+            if (lagretMed) {
+                alleResultaterMed = JSON.parse(lagretMed);
+                tegnResultatListe(listeMed, alleResultaterMed);
+            }
+            
+            // Sørger for at arkadepanelet er utregnet og klart med en gang
+            oppdaterArkadePanel();
+        }
+
+        // Kjører lasting idet nettsiden åpnes
+        document.addEventListener('DOMContentLoaded', lastFraLocalStorage);
+
+
+        // ==========================================
+        // 3. SPILL-KODE (Web Serial)
+        // ==========================================
+        let port; let reader; 
+        let lastX = 0; let lastY = 0;
+        let offsetX = 0; let offsetY = 0;
+        let isCalibrated = false; 
+        let totalDistance = 0; let readingCount = 0; 
         
         let aktivRunde = 'uten_vekt';
-        let historikkUtenVekt = [];
-        let historikkMedVekt = [];
+        let historikkUtenVekt = []; let historikkMedVekt = [];
         const maxDataPoints = 150; 
-        
-        let alleResultaterUten = [];
-        let alleResultaterMed = [];
+        let alleResultaterUten = []; let alleResultaterMed = []; 
         
         let timerKjorer = false;
-        let testDuration = 15;
-        let gjenvaerendeTid = testDuration;
+        let testDuration = 15; let gjenvaerendeTid = testDuration;
         let timerIntervall;
 
-        const canvasUtenVekt = document.getElementById('canvasUtenVekt');
-        const ctxUten = canvasUtenVekt.getContext('2d');
-        const canvasMedVekt = document.getElementById('canvasMedVekt');
-        const ctxMed = canvasMedVekt.getContext('2d');
+        const canvasUtenVekt = document.getElementById('canvasUtenVekt'); const ctxUten = canvasUtenVekt.getContext('2d');
+        const canvasMedVekt = document.getElementById('canvasMedVekt'); const ctxMed = canvasMedVekt.getContext('2d');
         
         const statusTekst = document.getElementById('statusTekst');
         const aktivRundeTekst = document.getElementById('aktivRundeTekst');
         const navneFelt = document.getElementById('navneFelt');
+        const displayNavnUten = document.getElementById('displayNavnUten'); const displayNavnMed = document.getElementById('displayNavnMed');
         
-        const displayNavnUten = document.getElementById('displayNavnUten');
-        const displayNavnMed = document.getElementById('displayNavnMed');
-        
-        // Lytter på det som skrives i navnefeltet og oppdaterer storskjermen live
         navneFelt.addEventListener('input', (e) => {
-            let n = e.target.value.trim();
-            displayNavnUten.innerText = n;
-            displayNavnMed.innerText = n;
+            let n = e.target.value.trim(); displayNavnUten.innerText = n; displayNavnMed.innerText = n;
         });
         
-        const connectBtn = document.getElementById('connectBtn');
-        const byttBtn = document.getElementById('byttBtn');
-        const boksUtenVekt = document.getElementById('boksUtenVekt');
-        const boksMedVekt = document.getElementById('boksMedVekt');
-        const listeBoksUtenVekt = document.getElementById('listeBoksUtenVekt');
-        const listeBoksMedVekt = document.getElementById('listeBoksMedVekt');
-        
-        const scoreUten = document.getElementById('scoreUten');
-        const scoreMed = document.getElementById('scoreMed');
-        const listeUten = document.getElementById('listeUten');
-        const listeMed = document.getElementById('listeMed');
-
+        const connectBtn = document.getElementById('connectBtn'); const byttBtn = document.getElementById('byttBtn');
+        const boksUtenVekt = document.getElementById('boksUtenVekt'); const boksMedVekt = document.getElementById('boksMedVekt');
+        const listeBoksUtenVekt = document.getElementById('listeBoksUtenVekt'); const listeBoksMedVekt = document.getElementById('listeBoksMedVekt');
+        const scoreUten = document.getElementById('scoreUten'); const scoreMed = document.getElementById('scoreMed');
+        const listeUten = document.getElementById('listeUten'); const listeMed = document.getElementById('listeMed');
         const alleStartKnapper = document.querySelectorAll('.start-test-trigger');
         const alleTidtakerTekster = document.querySelectorAll('.tidtaker-tekst-felles');
 
-        function settStartKnapper(statusDisabled) {
-            alleStartKnapper.forEach(btn => btn.disabled = statusDisabled);
-        }
-        function oppdaterTidTekst(tekst) {
-            alleTidtakerTekster.forEach(el => el.innerText = tekst);
-        }
+        function settStartKnapper(statusDisabled) { alleStartKnapper.forEach(btn => btn.disabled = statusDisabled); }
+        function oppdaterTidTekst(tekst) { alleTidtakerTekster.forEach(el => el.innerText = tekst); }
 
         function tegnResultatListe(listeElement, resultater) {
             listeElement.innerHTML = '';
             resultater.forEach(res => {
                 let li = document.createElement('li');
-                let spanNavn = document.createElement('span');
-                spanNavn.innerText = res.navn;
-                let spanScore = document.createElement('strong');
-                spanScore.innerText = res.poeng;
-                
-                li.appendChild(spanNavn);
-                li.appendChild(spanScore);
-                listeElement.appendChild(li);
+                let spanNavn = document.createElement('span'); spanNavn.innerText = res.navn;
+                let spanScore = document.createElement('strong'); spanScore.innerText = res.poeng;
+                li.appendChild(spanNavn); li.appendChild(spanScore); listeElement.appendChild(li);
             });
         }
 
         function toggleFullskjerm(boksId) {
             const boks = document.getElementById(boksId);
-            if (!document.fullscreenElement) {
-                boks.requestFullscreen().catch(err => {
-                    console.log(`Feil ved fullskjerm: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
+            if (!document.fullscreenElement) { boks.requestFullscreen().catch(err => { console.log(err.message); }); } 
+            else { document.exitFullscreen(); }
         }
 
         document.addEventListener('fullscreenchange', () => {
@@ -571,141 +484,84 @@
                 const aktivBoks = document.fullscreenElement;
                 const knapp = aktivBoks.querySelector('.fullskjerm-btn');
                 if (knapp) knapp.innerText = "Forminsk ✖";
-            } else {
-                alleFullskjermKnapper.forEach(btn => btn.innerText = "Forstørr ⛶");
-            }
+            } else { alleFullskjermKnapper.forEach(btn => btn.innerText = "Forstørr ⛶"); }
         });
 
         function tegnGraf(ctx, historikk) {
-            const bredde = 500;
-            const hoyde = 500;
-            ctx.clearRect(0, 0, bredde, hoyde);
-            
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
+            const bredde = 500; const hoyde = 500; ctx.clearRect(0, 0, bredde, hoyde);
+            ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
             for (let i = 1; i < 4; i++) {
                 ctx.beginPath(); ctx.moveTo(i * (bredde/4), 0); ctx.lineTo(i * (bredde/4), hoyde); ctx.stroke();
                 ctx.beginPath(); ctx.moveTo(0, i * (hoyde/4)); ctx.lineTo(bredde, i * (hoyde/4)); ctx.stroke();
             }
-            
             ctx.strokeStyle = '#999';
             ctx.beginPath(); ctx.moveTo(bredde/2, 0); ctx.lineTo(bredde/2, hoyde); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(0, hoyde/2); ctx.lineTo(bredde, hoyde/2); ctx.stroke();
 
             if (historikk.length > 1) {
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255, 99, 132, 0.8)';
-                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 99, 132, 0.8)'; ctx.lineWidth = 2;
                 ctx.moveTo(historikk[0].x, historikk[0].y);
-                for (let i = 1; i < historikk.length; i++) {
-                    ctx.lineTo(historikk[i].x, historikk[i].y);
-                }
+                for (let i = 1; i < historikk.length; i++) { ctx.lineTo(historikk[i].x, historikk[i].y); }
                 ctx.stroke();
             }
-
             if (historikk.length > 0) {
                 const siste = historikk[historikk.length - 1];
                 ctx.fillStyle = 'rgba(255, 99, 132, 1)';
-                ctx.beginPath();
-                ctx.arc(siste.x, siste.y, 4, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(siste.x, siste.y, 4, 0, Math.PI * 2); ctx.fill();
             }
         }
 
-        tegnGraf(ctxUten, historikkUtenVekt);
-        tegnGraf(ctxMed, historikkMedVekt);
+        tegnGraf(ctxUten, historikkUtenVekt); tegnGraf(ctxMed, historikkMedVekt);
 
         byttBtn.addEventListener('click', () => {
             if (timerKjorer) return; 
             if (aktivRunde === 'uten_vekt') {
-                aktivRunde = 'med_vekt';
-                aktivRundeTekst.innerText = 'Med vekt';
-                byttBtn.innerText = 'Bytt til "Uten vekt" ↔️';
-                
-                boksUtenVekt.classList.replace('aktiv', 'inaktiv');
-                listeBoksUtenVekt.classList.replace('aktiv', 'inaktiv');
-                
-                boksMedVekt.classList.replace('inaktiv', 'aktiv');
-                listeBoksMedVekt.classList.replace('inaktiv', 'aktiv');
+                aktivRunde = 'med_vekt'; aktivRundeTekst.innerText = 'Med vekt'; byttBtn.innerText = 'Bytt til "Uten vekt" ↔️';
+                boksUtenVekt.classList.replace('aktiv', 'inaktiv'); listeBoksUtenVekt.classList.replace('aktiv', 'inaktiv');
+                boksMedVekt.classList.replace('inaktiv', 'aktiv'); listeBoksMedVekt.classList.replace('inaktiv', 'aktiv');
             } else {
-                aktivRunde = 'uten_vekt';
-                aktivRundeTekst.innerText = 'Uten vekt';
-                byttBtn.innerText = 'Bytt til "Med vekt" ↔️';
-                
-                boksMedVekt.classList.replace('aktiv', 'inaktiv');
-                listeBoksMedVekt.classList.replace('aktiv', 'inaktiv');
-                
-                boksUtenVekt.classList.replace('inaktiv', 'aktiv');
-                listeBoksUtenVekt.classList.replace('inaktiv', 'aktiv');
+                aktivRunde = 'uten_vekt'; aktivRundeTekst.innerText = 'Uten vekt'; byttBtn.innerText = 'Bytt til "Med vekt" ↔️';
+                boksMedVekt.classList.replace('aktiv', 'inaktiv'); listeBoksMedVekt.classList.replace('aktiv', 'inaktiv');
+                boksUtenVekt.classList.replace('inaktiv', 'aktiv'); listeBoksUtenVekt.classList.replace('inaktiv', 'aktiv');
             }
         });
 
         connectBtn.addEventListener('click', async () => {
             try {
-                port = await navigator.serial.requestPort();
-                await port.open({ baudRate: 115200 });
-                
-                statusTekst.innerText = "✓ Tilkoblet";
-                statusTekst.style.color = "#093E4A"; 
-                
+                port = await navigator.serial.requestPort(); await port.open({ baudRate: 115200 });
+                statusTekst.innerText = "✓ Tilkoblet"; statusTekst.style.color = "#093E4A"; 
                 settStartKnapper(false);
-
-                const textDecoder = new TextDecoderStream();
-                port.readable.pipeTo(textDecoder.writable);
-                reader = textDecoder.readable.getReader();
-                
-                let buffer = "";
-
+                const textDecoder = new TextDecoderStream(); port.readable.pipeTo(textDecoder.writable);
+                reader = textDecoder.readable.getReader(); let buffer = "";
                 while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    
-                    buffer += value;
-                    let lines = buffer.split('\n');
-                    buffer = lines.pop();
-
-                    for (let line of lines) {
-                        line = line.trim();
-                        if (line) parseAndDrawXY(line);
-                    }
+                    const { value, done } = await reader.read(); if (done) break;
+                    buffer += value; let lines = buffer.split('\n'); buffer = lines.pop();
+                    for (let line of lines) { line = line.trim(); if (line) parseAndDrawXY(line); }
                 }
-            } catch (error) {
-                console.error("Tilkobling avbrutt eller feilet:", error);
-            }
+            } catch (error) { console.error("Tilkobling feilet:", error); }
         });
 
         function parseAndDrawXY(line) {
             let parts = line.split(":");
             if (parts.length === 2) {
-                let label = parts[0].trim();
-                let value = parseFloat(parts[1].trim());
-                
-                if (label === "Tilt_Z") {
-                    lastY = value;
-                } 
+                let label = parts[0].trim(); let value = parseFloat(parts[1].trim());
+                if (label === "Tilt_Z") { lastY = value; } 
                 else if (label === "Tilt_X") {
                     lastX = value;
-                    
                     if (timerKjorer) {
-                        if (!isCalibrated) {
-                            offsetX = lastX;
-                            offsetY = lastY;
-                            isCalibrated = true;
-                        }
-                        
-                        let adjustedX = lastX - offsetX;
-                        let adjustedY = lastY - offsetY;
-
+                        if (!isCalibrated) { offsetX = lastX; offsetY = lastY; isCalibrated = true; }
+                        let adjustedX = lastX - offsetX; let adjustedY = lastY - offsetY;
                         let distance = Math.sqrt((adjustedX * adjustedX) + (adjustedY * adjustedY));
-                        totalDistance += distance;
-                        readingCount++;
                         
+                        totalDistance += distance; readingCount++;
                         let averageWobble = totalDistance / readingCount;
+                        
+                        updateTiltSound(distance);
+
                         let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                         aktivScoreFelt.innerText = Math.round(averageWobble);
                         
-                        const xPos = 250 + ((adjustedX / 1100) * 250);
-                        const yPos = 250 + ((adjustedY / 1100) * 250);
+                        const xPos = 250 + ((adjustedX / 1100) * 250); const yPos = 250 + ((adjustedY / 1100) * 250);
 
                         if (aktivRunde === 'uten_vekt') {
                             historikkUtenVekt.push({ x: xPos, y: yPos });
@@ -724,48 +580,35 @@
         function startEksperiment() {
             if (timerKjorer) return;
             
-            let startNavn = navneFelt.value.trim() || 'Gjest';
-            displayNavnUten.innerText = startNavn;
-            displayNavnMed.innerText = startNavn;
+            playStartSound(); startTiltSound();
             
-            timerKjorer = true;
-            isCalibrated = false; 
-            totalDistance = 0;
-            readingCount = 0;
+            let startNavn = navneFelt.value.trim() || 'Gjest';
+            displayNavnUten.innerText = startNavn; displayNavnMed.innerText = startNavn;
+            
+            timerKjorer = true; isCalibrated = false; totalDistance = 0; readingCount = 0;
             
             if (aktivRunde === 'uten_vekt') {
-                historikkUtenVekt = [];
-                scoreUten.innerText = '0';
-                tegnGraf(ctxUten, historikkUtenVekt);
+                historikkUtenVekt = []; scoreUten.innerText = '0'; tegnGraf(ctxUten, historikkUtenVekt);
             } else {
-                historikkMedVekt = [];
-                scoreMed.innerText = '0';
-                tegnGraf(ctxMed, historikkMedVekt);
+                historikkMedVekt = []; scoreMed.innerText = '0'; tegnGraf(ctxMed, historikkMedVekt);
             }
 
-            gjenvaerendeTid = testDuration;
-            oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
-            
-            settStartKnapper(true);
-            byttBtn.disabled = true;
-            navneFelt.disabled = true;
+            gjenvaerendeTid = testDuration; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
+            settStartKnapper(true); byttBtn.disabled = true; navneFelt.disabled = true;
 
             timerIntervall = setInterval(() => {
-                gjenvaerendeTid--;
-                oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
+                gjenvaerendeTid--; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
                 
                 if (gjenvaerendeTid <= 0) {
-                    clearInterval(timerIntervall);
-                    timerKjorer = false;
+                    clearInterval(timerIntervall); timerKjorer = false;
                     
-                    settStartKnapper(false);
-                    byttBtn.disabled = false;
-                    navneFelt.disabled = false;
+                    stopTiltSound(); playGameOverSound();
+                    
+                    settStartKnapper(false); byttBtn.disabled = false; navneFelt.disabled = false;
                     oppdaterTidTekst("Ferdig!");
                     
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
                     let aktivListe = aktivRunde === 'uten_vekt' ? listeUten : listeMed;
-                    
                     let spillerNavn = navneFelt.value.trim() || 'Gjest';
                     let sluttPoeng = parseInt(aktivScoreFelt.innerText, 10);
                     
@@ -773,23 +616,24 @@
                     
                     if (aktivRunde === 'uten_vekt') {
                         alleResultaterUten.push(nyttResultat);
-                        alleResultaterUten.sort((a, b) => a.poeng - b.poeng);
+                        alleResultaterUten.sort((a, b) => a.poeng - b.poeng); // Endret til stigende!
                         tegnResultatListe(listeUten, alleResultaterUten);
                     } else {
                         alleResultaterMed.push(nyttResultat);
-                        alleResultaterMed.sort((a, b) => a.poeng - b.poeng);
+                        alleResultaterMed.sort((a, b) => a.poeng - b.poeng); // Endret til stigende!
                         tegnResultatListe(listeMed, alleResultaterMed);
                     }
-                    
                     navneFelt.value = '';
+
+                    oppdaterArkadePanel();
+                    
+                    // LAGRER TIL LOCAL STORAGE HVER GANG EN RUNDE ER FERDIG
+                    lagreTilLocalStorage();
                 }
             }, 1000);
         }
 
-        alleStartKnapper.forEach(btn => {
-            btn.addEventListener('click', startEksperiment);
-        });
-
+        alleStartKnapper.forEach(btn => { btn.addEventListener('click', startEksperiment); });
     </script>
 </body>
 </html>
