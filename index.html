@@ -86,6 +86,22 @@
             max-width: 140px; max-height: 100%; height: auto;
             object-fit: contain; opacity: 1; 
         }
+        
+        /* Nye sidetitler i hovedvinduet - senket 10px */
+        .corner-title { 
+            position: absolute; 
+            top: 40px; 
+            font-family: 'Press Start 2P', monospace; 
+            color: #093E4A; 
+            font-size: 14px; 
+            line-height: 1.8; 
+            text-align: center; 
+            text-shadow: 2px 2px 0px #92D3E2; 
+            z-index: 5; 
+        }
+        .corner-left { left: 30px; }
+        .corner-right { right: 30px; }
+        @media (max-width: 850px) { .corner-title { display: none; } }
 
         .logo-container, .kontroll-panel, .grafer { position: relative; z-index: 2; }
         .logo-container { text-align: center; margin-bottom: 10px; }
@@ -153,30 +169,48 @@
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
-        .curio-arcade-panel { font-family: 'Press Start 2P', monospace; background-color: #ffffff; color: #333; padding: 50px 30px 40px; border: 4px solid #093E4A; border-radius: 8px; text-align: center; width: 100%; max-width: 850px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .curio-arcade-panel { font-family: 'Press Start 2P', monospace; background-color: #ffffff; color: #333; padding: 50px 40px 40px; border: 4px solid #093E4A; border-radius: 8px; text-align: center; width: 100%; max-width: 900px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .close-btn { position: absolute; top: 20px; right: 25px; color: #ff0055; font-size: 16px; cursor: pointer; transition: color 0.2s; font-weight: bold; }
         .close-btn:hover { color: #990033; }
-        .arcade-header { font-size: 26px; color: #093E4A; margin-bottom: 15px; text-shadow: 2px 2px 0px #92D3E2; line-height: 1.4; }
-        .arcade-sub { font-size: 14px; color: #666; margin-bottom: 50px; line-height: 1.4; }
+        .arcade-header { font-size: 32px; color: #093E4A; margin-bottom: 20px; text-shadow: 2px 2px 0px #92D3E2; line-height: 1.4; }
+        .arcade-sub { font-size: 14px; color: #666; margin-bottom: 40px; line-height: 1.4; }
         
-        .chart-container { display: flex; justify-content: center; gap: 100px; align-items: flex-end; height: 350px; padding-bottom: 25px; position: relative; }
+        .chart-container { display: flex; justify-content: space-between; align-items: flex-end; height: 400px; padding-bottom: 25px; padding-left: 20px; padding-right: 20px; position: relative; }
         .chart-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px; z-index: 0; }
         
-        /* Oppdatert struktur for stolper, tall og tekst */
-        .column-group { display: flex; align-items: flex-end; gap: 50px; z-index: 1; }
+        .columns-wrapper { display: flex; gap: 60px; align-items: flex-end; z-index: 1; }
+        
+        .arcade-reveal-btn {
+            height: 310px; width: 55px;
+            background: #d85900; color: white; border: 4px solid #b04800;
+            padding: 0; font-family: 'Press Start 2P', monospace; font-size: 14px; font-weight: bold;
+            cursor: pointer; box-shadow: 0 4px 0 #853600; transition: all 0.1s, opacity 0.3s ease; border-radius: 5px;
+            writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 4px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        .arcade-reveal-btn:active { transform: translateY(4px); box-shadow: 0 0px 0 #853600; }
+        .arcade-reveal-btn:hover { background: #f56500; }
+        .arcade-reveal-btn.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+        
+        .column-group { display: flex; align-items: flex-end; gap: 40px; }
         .bar-and-score { display: flex; flex-direction: column; align-items: center; }
         
-        /* Usynlig boks som er like høy som stolpen, slik at teksten alltid står i midten */
-        .label-container { height: 268px; display: flex; align-items: center; }
+        .label-container { height: 318px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px; }
         
         .score-value { font-size: 36px; margin-bottom: 15px; font-weight: bold; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); text-align: center; }
         
-        .bar-wrapper { height: 260px; width: 80px; display: flex; align-items: flex-end; background-color: #f4f4f9; border: 4px solid #888; }
+        .bar-wrapper { height: 310px; width: 80px; display: flex; align-items: flex-end; background-color: #f4f4f9; border: 4px solid #888; }
         .bar { width: 100%; height: 0%; transition: height 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .bar-low { background: repeating-linear-gradient(to top, #ff0055, #ff0055 10px, #cc0044 10px, #cc0044 14px); box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); }
         .bar-high { background: repeating-linear-gradient(to top, #00A896, #00A896 10px, #008B7A 10px, #008B7A 14px); box-shadow: 0 0 10px rgba(0, 168, 150, 0.2); }
         
-        .col-label { font-size: 16px; line-height: 1.5; font-weight: bold; text-align: center; }
+        .col-label { font-size: 24px; line-height: 1.4; font-weight: bold; text-align: center; }
+        
+        .vote-result { text-align: center; opacity: 0; transform: translateY(15px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .vote-result.revealed { opacity: 1; transform: translateY(0); }
+        .vote-title { font-size: 14px; color: #666; line-height: 1.4; margin-bottom: 8px; }
+        .vote-pct { font-size: 40px; font-weight: bold; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); }
         
         .highlight-low { color: #ff0055; } .highlight-high { color: #00A896; }
         
@@ -197,6 +231,11 @@
         
         <div class="container">
             <div class="bakgrunns-bilde"><img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon"></div>
+            
+            <!-- Innrammende titler -->
+            <div class="corner-title corner-left">NEWTON<br>VS.<br>INTUISJON</div>
+            <div class="corner-title corner-right">NEWTON<br>VS.<br>INTUISJON</div>
+            
             <div class="logo-container"><img src="balansemesteren-logo.webp" alt="Balansemesteren"></div>
 
             <div class="kontroll-panel">
@@ -233,7 +272,7 @@
                     <div class="fullskjerm-kontroller">
                         <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
                         <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Forstørr ⛶</button>
+                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Fullskjerm ⛶</button>
                     </div>
                 </div>
                 
@@ -249,7 +288,7 @@
                     <div class="fullskjerm-kontroller">
                         <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
                         <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Forstørr ⛶</button>
+                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Fullskjerm ⛶</button>
                     </div>
                 </div>
                 <div class="liste-boks inaktiv" id="listeBoksMedVekt">
@@ -267,34 +306,50 @@
         <div class="curio-arcade-panel">
             <div class="close-btn" onclick="toggleModal()">[X] LUKK</div>
             <div class="arcade-header">NEWTON VS. INTUISJON</div>
-            <div class="arcade-sub">GJENNOMSNITTLIG VINGLESCORE (LAVERE ER BEDRE)</div>
+            <div class="arcade-sub">VINGLESCORE (LAVERE ER BEDRE)</div>
             
             <div class="chart-container">
-                <!-- VENSTRE: Tekst sentrert til venstre, stolpe+poeng til høyre -->
-                <div class="column-group">
-                    <div class="label-container">
-                        <div class="col-label highlight-low">UTEN<br>VEKT</div>
+                
+                <button class="arcade-reveal-btn reveal-trigger">VIS AVSTEMMING</button>
+                
+                <div class="columns-wrapper">
+                    <!-- VENSTRE STOLPE -->
+                    <div class="column-group">
+                        <div class="label-container">
+                            <div class="col-label highlight-low">UTEN<br>VEKT</div>
+                            <div class="vote-result highlight-low" id="vote-res-low">
+                                <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
+                                <div class="vote-pct">85%</div>
+                            </div>
+                        </div>
+                        <div class="bar-and-score">
+                            <div class="score-value highlight-low" id="counter-low">0</div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-low" id="graph-low" style="height: 0%;"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bar-and-score">
-                        <div class="score-value highlight-low" id="counter-low">0</div>
-                        <div class="bar-wrapper">
-                            <div class="bar bar-low" id="graph-low" style="height: 0%;"></div>
+                    
+                    <!-- HØYRE STOLPE -->
+                    <div class="column-group">
+                        <div class="bar-and-score">
+                            <div class="score-value highlight-high" id="counter-high">0</div>
+                            <div class="bar-wrapper">
+                                <div class="bar bar-high" id="graph-high" style="height: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="label-container">
+                            <div class="col-label highlight-high">MED<br>VEKT</div>
+                            <div class="vote-result highlight-high" id="vote-res-high">
+                                <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
+                                <div class="vote-pct">15%</div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- HØYRE: Stolpe+poeng til venstre, tekst sentrert til høyre -->
-                <div class="column-group">
-                    <div class="bar-and-score">
-                        <div class="score-value highlight-high" id="counter-high">0</div>
-                        <div class="bar-wrapper">
-                            <div class="bar bar-high" id="graph-high" style="height: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="label-container">
-                        <div class="col-label highlight-high">MED<br>VEKT</div>
-                    </div>
-                </div>
+                <button class="arcade-reveal-btn reveal-trigger">VIS AVSTEMMING</button>
+                
             </div>
 
             <div class="leaderboard-container">
@@ -335,11 +390,15 @@
         function playGameOverSound() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'sawtooth'; osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'triangle'; osc.connect(gain); gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
-            osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.6);
-            gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
-            osc.start(now); osc.stop(now + 0.6);
+            
+            osc.frequency.setValueAtTime(3500, now); 
+            gain.gain.setValueAtTime(0, now); 
+            gain.gain.linearRampToValueAtTime(0.3, now + 0.02); 
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0); 
+            
+            osc.start(now); osc.stop(now + 2.0);
         }
 
         function startTiltSound() {
@@ -365,15 +424,32 @@
 
 
         // ==========================================
-        // 2. MODAL & LOCALSTORAGE LOGIKK
+        // 2. MODAL, LOCALSTORAGE & AVSLØRING
         // ==========================================
         function toggleModal() {
             const modal = document.getElementById("data-modal");
             modal.classList.toggle("active");
+            
+            if (!modal.classList.contains("active")) {
+                setTimeout(() => {
+                    document.getElementById('vote-res-low').classList.remove('revealed');
+                    document.getElementById('vote-res-high').classList.remove('revealed');
+                    document.querySelectorAll('.reveal-trigger').forEach(btn => btn.classList.remove('hidden'));
+                }, 400); 
+            }
         }
         
         document.getElementById("data-modal").addEventListener("click", function(event) {
             if (event.target === this) toggleModal();
+        });
+
+        document.querySelectorAll('.reveal-trigger').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('vote-res-low').classList.add('revealed');
+                document.getElementById('vote-res-high').classList.add('revealed');
+                
+                document.querySelectorAll('.reveal-trigger').forEach(b => b.classList.add('hidden'));
+            });
         });
 
         function animateValue(obj, start, end, duration) {
@@ -440,7 +516,6 @@
             }
         }
 
-        // --- LOCAL STORAGE FUNKSJONER ---
         function lagreTilLocalStorage() {
             localStorage.setItem('balanseDataUten', JSON.stringify(alleResultaterUten));
             localStorage.setItem('balanseDataMed', JSON.stringify(alleResultaterMed));
@@ -531,11 +606,15 @@
                 const aktivBoks = document.fullscreenElement;
                 const knapp = aktivBoks.querySelector('.fullskjerm-btn');
                 if (knapp) knapp.innerText = "Forminsk ✖";
-            } else { alleFullskjermKnapper.forEach(btn => btn.innerText = "Forstørr ⛶"); }
+            } else { alleFullskjermKnapper.forEach(btn => btn.innerText = "Fullskjerm ⛶"); }
         });
 
+        // ----------------------------------------------------
+        // MILD FILTRERING VED OPPTEGNING (QUADRATIC CURVE)
+        // ----------------------------------------------------
         function tegnGraf(ctx, historikk) {
             const bredde = 500; const hoyde = 500; ctx.clearRect(0, 0, bredde, hoyde);
+            
             ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
             for (let i = 1; i < 4; i++) {
                 ctx.beginPath(); ctx.moveTo(i * (bredde/4), 0); ctx.lineTo(i * (bredde/4), hoyde); ctx.stroke();
@@ -546,14 +625,24 @@
             ctx.beginPath(); ctx.moveTo(0, hoyde/2); ctx.lineTo(bredde, hoyde/2); ctx.stroke();
 
             if (historikk.length > 1) {
-                ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 99, 132, 0.8)'; ctx.lineWidth = 2;
+                ctx.beginPath(); 
+                ctx.strokeStyle = 'rgba(220, 20, 20, 0.9)'; 
+                ctx.lineWidth = 2.5; 
+                
                 ctx.moveTo(historikk[0].x, historikk[0].y);
-                for (let i = 1; i < historikk.length; i++) { ctx.lineTo(historikk[i].x, historikk[i].y); }
+                
+                for (let i = 1; i < historikk.length - 1; i++) {
+                    const midX = (historikk[i].x + historikk[i+1].x) / 2;
+                    const midY = (historikk[i].y + historikk[i+1].y) / 2;
+                    ctx.quadraticCurveTo(historikk[i].x, historikk[i].y, midX, midY);
+                }
+                ctx.lineTo(historikk[historikk.length - 1].x, historikk[historikk.length - 1].y);
                 ctx.stroke();
             }
+            
             if (historikk.length > 0) {
                 const siste = historikk[historikk.length - 1];
-                ctx.fillStyle = 'rgba(255, 99, 132, 1)';
+                ctx.fillStyle = 'rgba(220, 20, 20, 1)'; 
                 ctx.beginPath(); ctx.arc(siste.x, siste.y, 4, 0, Math.PI * 2); ctx.fill();
             }
         }
@@ -683,7 +772,6 @@
 
         alleStartKnapper.forEach(btn => { btn.addEventListener('click', startEksperiment); });
 
-        // --- FUNKSJON FOR Å NULLSTILLE DATA ---
         resetBtn.addEventListener('click', () => {
             if (confirm("Er du sikker på at du vil slette alle poeng og starte med blanke ark?")) {
                 localStorage.removeItem('balanseDataUten');
@@ -699,7 +787,6 @@
             }
         });
 
-        // --- FUNKSJON FOR Å LASTE NED DATA (CSV) ---
         nedlastBtn.addEventListener('click', () => {
             let csvContent = "Modus,Navn,Vinglescore\n";
 
