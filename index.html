@@ -11,6 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
+        /* Importerer DSEG7-fonten direkte fra nett */
+        @font-face {
+            font-family: 'DSEG7 Classic';
+            src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-BoldItalic.woff2') format('woff2');
+            font-weight: 700;
+            font-style: italic;
+        }
+
         body { 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to bottom, #21a3c0, #093E4A);
@@ -18,13 +26,41 @@
             background-attachment: fixed;
             margin: 0; 
             padding: 10px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Sentrerer innholdet horisontalt */
         }
 
+        /* --- MOBIL- OG KOMPATIBILITETSSKJERM --- */
+        .mobile-warning-screen {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .mobile-warning-screen h1 { font-family: 'Press Start 2P', monospace; font-size: 24px; color: #ffcc00; line-height: 1.5; margin-bottom: 20px; }
+        .mobile-warning-screen p { font-size: 16px; max-width: 500px; margin-bottom: 20px; }
+        .mobile-warning-screen .highlight-text { font-weight: 700; font-size: 18px; margin-bottom: 40px; }
+        .vote-link-btn {
+            background: #d85900; color: white; border: 4px solid #b04800;
+            padding: 20px 30px; font-family: 'Press Start 2P', monospace; font-size: 14px;
+            text-decoration: none; border-radius: 8px; box-shadow: 0 6px 0 #853600; 
+            transition: all 0.1s; display: inline-block; cursor: pointer;
+        }
+        .vote-link-btn:active { transform: translateY(6px); box-shadow: 0 0px 0 #853600; }
+        .vote-link-btn:hover { background: #f56500; }
+
+        /* --- HOVEDSPILLET --- */
         .game-layout-wrapper {
             position: relative;
+            width: 100%;
             max-width: 1600px; 
             margin: 0 auto;
-            padding: 15px 0; 
+            padding: 15px 0 5px 0; /* Minimal luft nederst mot teksten */
             display: flex;
             align-items: stretch; 
             justify-content: center;
@@ -32,75 +68,33 @@
         }
 
         .side-banner {
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-family: 'Press Start 2P', monospace;
-            color: #ff8800; 
-            font-size: 26px; 
-            cursor: pointer;
-            writing-mode: vertical-rl;
-            text-orientation: upright; 
-            text-shadow: 3px 3px 0px #000;
-            transition: all 0.2s ease;
-            padding: 25px 25px; 
-            user-select: none;
-            text-align: center;
-            letter-spacing: 10px; 
-            
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-            flex-shrink: 0; 
-            
+            display: flex; justify-content: center; align-items: center; 
+            font-family: 'Press Start 2P', monospace; color: #ff8800; font-size: 26px; 
+            cursor: pointer; writing-mode: vertical-rl; text-orientation: upright; 
+            text-shadow: 3px 3px 0px #000; transition: all 0.2s ease; padding: 25px 25px; 
+            user-select: none; text-align: center; letter-spacing: 10px; 
+            background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10; flex-shrink: 0; 
             @media (max-width: 900px) { display: none; } 
         }
-
-        .side-banner:hover { 
-            color: #ffcc00; 
-            transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
+        .side-banner:hover { color: #ffcc00; transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
 
         .container { 
-            position: relative; 
-            width: 100%;
-            max-width: 1400px; 
-            margin: 0; 
-            background: white; 
-            padding: 15px; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-            z-index: 10;
+            position: relative; width: 100%; max-width: 1400px; margin: 0; 
+            background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10;
         }
         
         .bakgrunns-bilde {
-            position: absolute;
-            top: 10px; bottom: 10px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 0; pointer-events: none; 
-            display: flex; justify-content: center; align-items: center; 
+            position: absolute; top: 10px; bottom: 10px; left: 50%; transform: translateX(-50%);
+            z-index: 0; pointer-events: none; display: flex; justify-content: center; align-items: center; 
         }
-        .bakgrunns-bilde img {
-            max-width: 140px; max-height: 100%; height: auto;
-            object-fit: contain; opacity: 1; 
-        }
+        .bakgrunns-bilde img { max-width: 140px; max-height: 100%; height: auto; object-fit: contain; opacity: 1; }
         
-        /* Nye sidetitler i hovedvinduet - senket 10px */
         .corner-title { 
-            position: absolute; 
-            top: 40px; 
-            font-family: 'Press Start 2P', monospace; 
-            color: #093E4A; 
-            font-size: 14px; 
-            line-height: 1.8; 
-            text-align: center; 
-            text-shadow: 2px 2px 0px #92D3E2; 
-            z-index: 5; 
+            position: absolute; top: 40px; font-family: 'Press Start 2P', monospace; color: #093E4A; 
+            font-size: 14px; line-height: 1.8; text-align: center; text-shadow: 2px 2px 0px #92D3E2; z-index: 5; 
         }
-        .corner-left { left: 30px; }
-        .corner-right { right: 30px; }
+        .corner-left { left: 30px; } .corner-right { right: 30px; }
         @media (max-width: 850px) { .corner-title { display: none; } }
 
         .logo-container, .kontroll-panel, .grafer { position: relative; z-index: 2; }
@@ -124,8 +118,10 @@
         .start-test-trigger { background: #093E4A !important; color: white !important; } 
         .start-test-trigger:disabled { background: #849ea4 !important; color: rgba(255, 255, 255, 0.7) !important; }
         
-        .grafer { display: flex; gap: 10px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
+        #openVoteModalBtn { background: #d85900; color: white; }
+        #openVoteModalBtn:hover { background: #f56500; }
         
+        .grafer { display: flex; gap: 10px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
         .liste-boks { flex: 1; min-width: 150px; background: #fff; border-radius: 10px; padding: 10px; overflow-y: auto; transition: all 0.3s ease; }
         .liste-boks h3 { margin-top: 0; font-size: 15px; font-weight: 700; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 5px; margin-bottom: 5px; color: #333; }
         .resultat-liste { list-style: none; padding: 0; margin: 0; }
@@ -142,7 +138,13 @@
         .inaktiv { border: 2px solid #333; opacity: 0.4; box-shadow: none; }
         
         .score-tavle { background: #165B6A; color: white; text-align: center; padding: 5px 10px; margin-top: 8px; border-radius: 5px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; box-sizing: border-box; }
-        .score-tavle span { font-family: monospace; }
+        
+        /* DSEG-fonten på standardvisningen */
+        .score-tavle span { 
+            font-family: 'DSEG7 Classic', monospace; 
+            font-style: italic; 
+            font-weight: 700;
+        }
 
         .fullskjerm-kontroller { text-align: center; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
         .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 6px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; }
@@ -151,43 +153,102 @@
         .tid-visning-fullskjerm { font-variant-numeric: tabular-nums; white-space: nowrap; }
         .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 16px !important; }
 
+        /* --- FULLSKJERM-STILER --- */
         .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr; align-items: center; }
         .graf-boks:fullscreen h2 { position: absolute; top: 100px; left: 40px; width: 250px; font-size: 3em; margin: 0; text-align: center; }
-        .graf-boks:fullscreen canvas { grid-column: 2; grid-row: 1; height: 90vh; width: auto; margin: 0 auto; }
+        
+        .graf-boks:fullscreen canvas { 
+            grid-column: 2; 
+            grid-row: 1; 
+            height: 90vh; 
+            width: auto; 
+            margin: 0 auto; 
+            border: 3px solid #093E4A; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        }
+        
         .graf-boks:fullscreen .fullskjerm-kontroller { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 30px; margin-top: 80px; justify-content: center; }
         .hoyre-panel { display: block; width: 100%; }
         .graf-boks:fullscreen .hoyre-panel { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
         .graf-boks:fullscreen .spiller-navn-display { display: block; text-align: center; font-size: 2.5em; font-weight: 700; color: #093E4A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
         .graf-boks:fullscreen .score-tavle { font-size: 22px; padding: 20px; margin-top: 0; display: flex; flex-direction: column; justify-content: center; border: none; }
-        .graf-boks:fullscreen .score-tavle span { display: block; font-size: 80px; font-weight: 700; margin-top: 15px; }
+        
+        .graf-boks:fullscreen .score-tavle span { 
+            display: block; 
+            font-size: 110px; 
+            margin-top: 25px; 
+            line-height: 1;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); 
+        }
+        
         .graf-boks:fullscreen .fullskjerm-btn { font-size: 20px; padding: 15px 30px; background-color: #DF6C08; color: white; width: 100%; }
         .graf-boks:fullscreen .fullskjerm-btn:hover { background-color: #E46B00; filter: brightness(1.15) saturate(1.2); }
         .graf-boks:fullscreen .start-fullskjerm-btn { display: block; font-size: 20px; padding: 15px 30px; width: 100%; background-color: #093E4A !important; color: white !important; }
         .graf-boks:fullscreen .tid-visning-fullskjerm { display: block; font-size: 32px; font-weight: 700; color: #333; }
 
-        /* --- ARKADE POP-UP --- */
+        /* --- KREDITTERING (Vannmerke) i Fullskjerm --- */
+        .fullscreen-kredittering { display: none; }
+        .graf-boks:fullscreen .fullscreen-kredittering {
+            display: inline-block;
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            opacity: 0.5; 
+        }
+        .graf-boks:fullscreen .kred-tittel {
+            font-size: 20px;
+            font-weight: 700;
+            color: #093E4A;
+            letter-spacing: 2px;
+            margin-bottom: -4px;
+            white-space: nowrap;
+        }
+        .graf-boks:fullscreen .kred-sub {
+            font-size: 11px;
+            font-weight: 600;
+            color: #093E4A;
+            letter-spacing: 2.15px; 
+            white-space: nowrap;
+            margin-left: 2px; 
+        }
+
+        /* --- GLOBAL FOOTER PÅ FORSIDEN --- */
+        .site-footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            padding: 0 0 10px 0;
+            margin-top: 0px; 
+            width: 100%;
+        }
+
+        /* --- MODALER (Pop-ups generelt) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
-        .curio-arcade-panel { font-family: 'Press Start 2P', monospace; background-color: #ffffff; color: #333; padding: 50px 40px 40px; border: 4px solid #093E4A; border-radius: 8px; text-align: center; width: 100%; max-width: 900px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .curio-arcade-panel { font-family: 'Press Start 2P', monospace; background-color: #ffffff; color: #333; padding: 50px 40px 40px; border: 4px solid #093E4A; border-radius: 8px; text-align: center; width: 100%; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .close-btn { position: absolute; top: 20px; right: 25px; color: #ff0055; font-size: 16px; cursor: pointer; transition: color 0.2s; font-weight: bold; }
         .close-btn:hover { color: #990033; }
         .arcade-header { font-size: 32px; color: #093E4A; margin-bottom: 20px; text-shadow: 2px 2px 0px #92D3E2; line-height: 1.4; }
         .arcade-sub { font-size: 14px; color: #666; margin-bottom: 40px; line-height: 1.4; }
         
+        /* --- RESULTAT-MODAL SPESIFIKT --- */
+        #data-modal .curio-arcade-panel { max-width: 900px; }
         .chart-container { display: flex; justify-content: space-between; align-items: flex-end; height: 400px; padding-bottom: 25px; padding-left: 20px; padding-right: 20px; position: relative; }
         .chart-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px; z-index: 0; }
-        
         .columns-wrapper { display: flex; gap: 60px; align-items: flex-end; z-index: 1; }
         
         .arcade-reveal-btn {
-            height: 310px; width: 55px;
-            background: #d85900; color: white; border: 4px solid #b04800;
-            padding: 0; font-family: 'Press Start 2P', monospace; font-size: 14px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 0 #853600; transition: all 0.1s, opacity 0.3s ease; border-radius: 5px;
+            height: 310px; width: 55px; background: #d85900; color: white; border: 4px solid #b04800; padding: 0; 
+            font-family: 'Press Start 2P', monospace; font-size: 14px; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 4px 0 #853600; transition: all 0.1s, opacity 0.3s ease; border-radius: 5px;
             writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 4px; line-height: 1;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 10;
+            display: flex; align-items: center; justify-content: center; z-index: 10;
         }
         .arcade-reveal-btn:active { transform: translateY(4px); box-shadow: 0 0px 0 #853600; }
         .arcade-reveal-btn:hover { background: #f56500; }
@@ -195,11 +256,9 @@
         
         .column-group { display: flex; align-items: flex-end; gap: 40px; }
         .bar-and-score { display: flex; flex-direction: column; align-items: center; }
-        
         .label-container { height: 318px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 30px; }
         
         .score-value { font-size: 36px; margin-bottom: 15px; font-weight: bold; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); text-align: center; }
-        
         .bar-wrapper { height: 310px; width: 80px; display: flex; align-items: flex-end; background-color: #f4f4f9; border: 4px solid #888; }
         .bar { width: 100%; height: 0%; transition: height 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .bar-low { background: repeating-linear-gradient(to top, #ff0055, #ff0055 10px, #cc0044 10px, #cc0044 14px); box-shadow: 0 0 10px rgba(255, 0, 85, 0.2); }
@@ -218,21 +277,59 @@
         .leaderboard-col { width: 45%; }
         .leaderboard-title { font-size: 14px; color: #093E4A; margin-bottom: 20px; text-align: center; line-height: 1.4; font-weight: bold; }
         .score-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 16px; font-weight: bold; }
-        #low-rank-1, #high-rank-1 { color: #d4af37; } 
-        #low-rank-2, #high-rank-2 { color: #888888; } 
-        #low-rank-3, #high-rank-3 { color: #cd7f32; } 
+        #low-rank-1, #high-rank-1 { color: #d4af37; } #low-rank-2, #high-rank-2 { color: #888888; } #low-rank-3, #high-rank-3 { color: #cd7f32; } 
         .score-initials { color: #333; }
+        
+        /* --- AVSTEMMING-MODAL SPESIFIKT --- */
+        #vote-modal .curio-arcade-panel { max-width: 950px; padding: 40px 20px; }
+        
+        .vote-divider-horizontal { width: 100%; border-top: 2px dashed #ccc; margin: 30px 0; }
+        
+        .valglokale-container { display: flex; align-items: flex-start; text-align: center; font-family: 'Poppins', sans-serif; }
+        .valglokale-qr { flex: 1; padding: 0 40px; border-right: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; }
+        .valglokale-pc { flex: 1; padding: 0 40px; display: flex; flex-direction: column; align-items: center; }
+        
+        .valglokale-qr h3, .valglokale-pc h3 { font-size: 18px; color: #093E4A; margin-top: 0; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
+        .valglokale-qr p, .valglokale-pc p { font-size: 13px; color: #666; margin-bottom: 25px; font-weight: 600; min-height: 40px; }
+        
+        .qr-placeholder { 
+            width: 250px; height: 250px; background-color: white; margin: 0 auto; display: flex; 
+            align-items: center; justify-content: center; border: 4px solid #093E4A; border-radius: 12px;
+            background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .qr-placeholder span { background: white; padding: 6px 12px; font-weight: bold; border: 2px solid #333; font-family: 'Press Start 2P', monospace; font-size: 12px; color: #333; }
+        
+        .vote-link-btn-large {
+            width: 250px; height: 250px; background: #d85900; color: white; border: none;
+            text-decoration: none; border-radius: 12px; box-shadow: 0 8px 0 #b04800; 
+            transition: all 0.1s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; box-sizing: border-box; text-align: center;
+        }
+        .vote-link-btn-large:active { transform: translateY(8px); box-shadow: 0 0px 0 #b04800; }
+        .vote-link-btn-large:hover { background: #f56500; }
+        
+        .vote-link-btn-large .largetext { font-family: 'Press Start 2P', monospace; font-size: 26px; margin-bottom: 20px; text-shadow: 2px 2px 0px #b04800; }
+        .vote-link-btn-large .smalltext { font-family: 'Press Start 2P', monospace; font-size: 16px; text-shadow: 2px 2px 0px #b04800; }
     </style>
 </head>
 <body>
 
-    <div class="game-layout-wrapper">
-        <div class="side-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
+    <!-- 1. MOBIL / KOMPATIBILITETSSKJERM -->
+    <div id="mobile-warning" class="mobile-warning-screen">
+        <h1>INGEN USB-STØTTE</h1>
+        <p>Dette eksperimentet bruker sensorer som krever en PC (Chrome/Edge) for å koble til via USB.</p>
+        <p class="highlight-text">Er du her for å stemme i eksperimentet?</p>
+        <a href="stem.html" class="vote-link-btn">GÅ TIL AVSTEMMING</a>
+    </div>
+
+    <!-- 2. HOVEDSPILLET -->
+    <div class="game-layout-wrapper" id="main-game-ui">
+        <div class="side-banner" onclick="toggleDataModal()">HAR NEWTON RETT?</div>
         
         <div class="container">
             <div class="bakgrunns-bilde"><img src="balanse-haand.webp" alt="Bakgrunnsillustrasjon"></div>
             
-            <!-- Innrammende titler -->
             <div class="corner-title corner-left">NEWTON<br>VS.<br>INTUISJON</div>
             <div class="corner-title corner-right">NEWTON<br>VS.<br>INTUISJON</div>
             
@@ -247,9 +344,9 @@
                 
                 <div class="start-gruppe">
                     <input type="text" id="navneFelt" placeholder="Deltakernavn">
+                    <button id="openVoteModalBtn">Åpne avstemming</button>
                     <button class="start-test-trigger" disabled>Start test (15s)</button>
                     <span class="tidtaker-tekst-felles" style="margin-left: 5px; font-weight: 700; width: 70px; display: inline-block;">Tid: 15s</span>
-                    
                     <button id="resetBtn">Nullstill</button>
                     <button id="nedlastBtn">Last ned data</button>
                 </div>
@@ -274,6 +371,11 @@
                         <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
                         <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Fullskjerm ⛶</button>
                     </div>
+                    
+                    <div class="fullscreen-kredittering">
+                        <div class="kred-tittel">BALANSEMESTEREN</div>
+                        <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
+                    </div>
                 </div>
                 
                 <div class="illustrasjon-midten"></div>
@@ -290,6 +392,11 @@
                         <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
                         <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Fullskjerm ⛶</button>
                     </div>
+
+                    <div class="fullscreen-kredittering">
+                        <div class="kred-tittel">BALANSEMESTEREN</div>
+                        <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
+                    </div>
                 </div>
                 <div class="liste-boks inaktiv" id="listeBoksMedVekt">
                     <h3>Poeng Med Vekt</h3>
@@ -298,22 +405,22 @@
             </div>
         </div>
 
-        <div class="side-banner" onclick="toggleModal()">HAR NEWTON RETT?</div>
+        <div class="side-banner" onclick="toggleDataModal()">HAR NEWTON RETT?</div>
     </div>
+    
+    <!-- DEN NYE GLOBALE FOOTEREN PÅ FORSIDEN -->
+    <div class="site-footer">© curioworks &nbsp;&bull;&nbsp; curious by design</div>
 
-    <!-- ARKADE POP-UP -->
+    <!-- 3. DATA-MODAL (Pop-up for resultater) -->
     <div id="data-modal" class="modal-overlay">
         <div class="curio-arcade-panel">
-            <div class="close-btn" onclick="toggleModal()">[X] LUKK</div>
+            <div class="close-btn" onclick="toggleDataModal()">[X] LUKK</div>
             <div class="arcade-header">NEWTON VS. INTUISJON</div>
             <div class="arcade-sub">VINGLESCORE (LAVERE ER BEDRE)</div>
             
             <div class="chart-container">
-                
                 <button class="arcade-reveal-btn reveal-trigger">VIS AVSTEMMING</button>
-                
                 <div class="columns-wrapper">
-                    <!-- VENSTRE STOLPE -->
                     <div class="column-group">
                         <div class="label-container">
                             <div class="col-label highlight-low">UTEN<br>VEKT</div>
@@ -324,19 +431,14 @@
                         </div>
                         <div class="bar-and-score">
                             <div class="score-value highlight-low" id="counter-low">0</div>
-                            <div class="bar-wrapper">
-                                <div class="bar bar-low" id="graph-low" style="height: 0%;"></div>
-                            </div>
+                            <div class="bar-wrapper"><div class="bar bar-low" id="graph-low" style="height: 0%;"></div></div>
                         </div>
                     </div>
                     
-                    <!-- HØYRE STOLPE -->
                     <div class="column-group">
                         <div class="bar-and-score">
                             <div class="score-value highlight-high" id="counter-high">0</div>
-                            <div class="bar-wrapper">
-                                <div class="bar bar-high" id="graph-high" style="height: 0%;"></div>
-                            </div>
+                            <div class="bar-wrapper"><div class="bar bar-high" id="graph-high" style="height: 0%;"></div></div>
                         </div>
                         <div class="label-container">
                             <div class="col-label highlight-high">MED<br>VEKT</div>
@@ -347,9 +449,7 @@
                         </div>
                     </div>
                 </div>
-                
                 <button class="arcade-reveal-btn reveal-trigger">VIS AVSTEMMING</button>
-                
             </div>
 
             <div class="leaderboard-container">
@@ -369,8 +469,53 @@
         </div>
     </div>
 
+    <!-- 4. VALGLOKALE-MODAL (Pop-up for stemming oppdatert etter tegning) -->
+    <div id="vote-modal" class="modal-overlay">
+        <div class="curio-arcade-panel">
+            <div class="close-btn" onclick="toggleVoteModal()">[X] LUKK</div>
+            
+            <div class="arcade-header" style="font-size: 36px; margin-bottom: 25px;">AVSTEMMING</div>
+            <div class="arcade-sub" style="font-size: 16px; line-height: 1.8; margin-bottom: 0px; color: #093E4A; font-family: 'Press Start 2P', monospace;">
+                HVA ER ENKLEST Å BALANSERE?<br>EN STANG UTEN VEKT ELLER MED VEKT I TOPPEN?
+            </div>
+            
+            <div class="vote-divider-horizontal"></div>
+            
+            <div class="valglokale-container">
+                <!-- Venstre: For publikum (QR) -->
+                <div class="valglokale-qr">
+                    <h3>PUBLIKUM:</h3>
+                    <p>Skann for å stemme med mobilen!</p>
+                    <div class="qr-placeholder">
+                        <span>[ QR-KODE ]</span>
+                    </div>
+                </div>
+                
+                <!-- Høyre: For klasserommet (Ny fane) -->
+                <div class="valglokale-pc">
+                    <h3>ELEVER:</h3>
+                    <p>Klikk her for å stemme direkte på denne PC-en.</p>
+                    <a href="stem.html" target="_blank" class="vote-link-btn-large">
+                        <span class="largetext">GÅ TIL</span>
+                        <span class="smalltext">AVSTEMMING</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // ==========================================
+        // 0. SJEKK FOR MOBIL / KOMPATIBILITET
+        // ==========================================
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const supportsSerial = "serial" in navigator;
+        
+        if (isMobileDevice || !supportsSerial) {
+            document.getElementById('main-game-ui').style.display = 'none';
+            document.getElementById('mobile-warning').style.display = 'flex';
+        }
+
         // ==========================================
         // 1. LYD-MOTOR
         // ==========================================
@@ -424,9 +569,9 @@
 
 
         // ==========================================
-        // 2. MODAL, LOCALSTORAGE & AVSLØRING
+        // 2. MODALER, LOCALSTORAGE & AVSLØRING
         // ==========================================
-        function toggleModal() {
+        function toggleDataModal() {
             const modal = document.getElementById("data-modal");
             modal.classList.toggle("active");
             
@@ -438,16 +583,23 @@
                 }, 400); 
             }
         }
-        
         document.getElementById("data-modal").addEventListener("click", function(event) {
-            if (event.target === this) toggleModal();
+            if (event.target === this) toggleDataModal();
         });
+
+        function toggleVoteModal() {
+            const modal = document.getElementById("vote-modal");
+            modal.classList.toggle("active");
+        }
+        document.getElementById("vote-modal").addEventListener("click", function(event) {
+            if (event.target === this) toggleVoteModal();
+        });
+        document.getElementById("openVoteModalBtn").addEventListener("click", toggleVoteModal);
 
         document.querySelectorAll('.reveal-trigger').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.getElementById('vote-res-low').classList.add('revealed');
                 document.getElementById('vote-res-high').classList.add('revealed');
-                
                 document.querySelectorAll('.reveal-trigger').forEach(b => b.classList.add('hidden'));
             });
         });
@@ -476,7 +628,6 @@
             }
 
             let dynamiskTak = Math.max(snittUten, snittMed, 100); 
-            
             let prosentUten = (snittUten / dynamiskTak) * 100;
             let prosentMed = (snittMed / dynamiskTak) * 100;
             
@@ -609,9 +760,6 @@
             } else { alleFullskjermKnapper.forEach(btn => btn.innerText = "Fullskjerm ⛶"); }
         });
 
-        // ----------------------------------------------------
-        // MILD FILTRERING VED OPPTEGNING (QUADRATIC CURVE)
-        // ----------------------------------------------------
         function tegnGraf(ctx, historikk) {
             const bredde = 500; const hoyde = 500; ctx.clearRect(0, 0, bredde, hoyde);
             
@@ -732,7 +880,7 @@
             gjenvaerendeTid = testDuration; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
             
             settStartKnapper(true); byttBtn.disabled = true; navneFelt.disabled = true; 
-            resetBtn.disabled = true; nedlastBtn.disabled = true;
+            resetBtn.disabled = true; nedlastBtn.disabled = true; document.getElementById("openVoteModalBtn").disabled = true;
 
             timerIntervall = setInterval(() => {
                 gjenvaerendeTid--; oppdaterTidTekst(`Tid: ${gjenvaerendeTid}s`);
@@ -743,7 +891,7 @@
                     stopTiltSound(); playGameOverSound();
                     
                     settStartKnapper(false); byttBtn.disabled = false; navneFelt.disabled = false; 
-                    resetBtn.disabled = false; nedlastBtn.disabled = false;
+                    resetBtn.disabled = false; nedlastBtn.disabled = false; document.getElementById("openVoteModalBtn").disabled = false;
                     oppdaterTidTekst("Ferdig!");
                     
                     let aktivScoreFelt = aktivRunde === 'uten_vekt' ? scoreUten : scoreMed;
