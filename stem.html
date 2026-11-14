@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Balansemesteren - Stem</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Sikrer at siden fyller hele mobilskjermen og forhindrer scrolling/zooming */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(to bottom, #21a3c0, #093E4A);
+            min-height: 100vh;
+            margin: 0; 
+            padding: 15px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hovedkortet */
+        .vote-card {
+            background: #ffffff;
+            border: 6px solid #093E4A;
+            border-radius: 12px;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Retro-overskriften */
+        .arcade-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 26px;
+            color: #093E4A;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px #92D3E2;
+            line-height: 1.4;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        /* Gigantiske avstemmingsknapper */
+        .vote-btn {
+            display: block;
+            width: 100%;
+            padding: 25px 15px;
+            margin-bottom: 20px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+            
+            /* Hindrer markering av tekst ved ivrig trykking */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Fargekodet mot index.html for gjenkjennelse */
+        .btn-uten {
+            background: #ff0055;
+            border-bottom: 8px solid #b3003b;
+        }
+        .btn-uten:active { transform: translateY(8px); border-bottom: 0px solid #b3003b; margin-bottom: 28px; }
+
+        .btn-med {
+            background: #00A896;
+            border-bottom: 8px solid #007366;
+        }
+        .btn-med:active { transform: translateY(8px); border-bottom: 0px solid #007366; margin-bottom: 28px; }
+
+        /* Takkemeldingen som dukker opp etter stemmegivning */
+        #thank-you-screen {
+            display: none;
+            padding: 30px 10px;
+            animation: fadeIn 0.5s;
+        }
+
+        .success-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .thank-you-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 24px;
+            color: #ff0055;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            text-shadow: 2px 2px 0px rgba(255, 0, 85, 0.15);
+        }
+
+        .thank-you-sub {
+            font-size: 18px;
+            color: #666;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="vote-card">
+        
+        <!-- SELVE AVSTEMNINGEN -->
+        <div id="vote-screen">
+            <div class="arcade-title">AVSTEMMING</div>
+            <div class="question-text">
+                Hva er enklest å balansere?<br>
+                En stang uten vekt, eller med vekt i toppen?
+            </div>
+            
+            <button class="vote-btn btn-uten" onclick="sendVote('uten')">UTEN VEKT</button>
+            <button class="vote-btn btn-med" onclick="sendVote('med')">MED VEKT</button>
+        </div>
+
+        <!-- KVITTERING ETTER VALG -->
+        <div id="thank-you-screen">
+            <div class="success-icon">
+                <!-- Pikselert retro-hake skalert opp til 120x120 -->
+                <svg viewBox="0 0 14 11" width="120" height="120" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(4px 4px 0px rgba(0, 168, 150, 0.15));">
+                    <rect x="0" y="5" width="2" height="2" fill="#00A896"/>
+                    <rect x="2" y="7" width="2" height="2" fill="#00A896"/>
+                    <rect x="4" y="9" width="2" height="2" fill="#00A896"/>
+                    <rect x="6" y="7" width="2" height="2" fill="#00A896"/>
+                    <rect x="8" y="5" width="2" height="2" fill="#00A896"/>
+                    <rect x="10" y="3" width="2" height="2" fill="#00A896"/>
+                    <rect x="12" y="1" width="2" height="2" fill="#00A896"/>
+                </svg>
+            </div>
+            <div class="thank-you-title">TAKK FOR<br>DIN STEMME!</div>
+            <div class="thank-you-sub">Følg med på storskjermen, etter at vi har spilt og forsket, for å se hva folk trodde.</div>
+        </div>
+
+    </div>
+
+    <script>
+        function sendVote(valg) {
+            // 1. Skjul avstemnings-knappene
+            document.getElementById('vote-screen').style.display = 'none';
+            
+            // 2. Vis takkemeldingen
+            document.getElementById('thank-you-screen').style.display = 'block';
+            
+            // 3. Her skal databasen (Firebase) kobles på senere!
+            console.log("Brukeren stemte på: " + valg);
+        }
+    </script>
+</body>
+</html>
