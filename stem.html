@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        /* Sikrer at siden fyller hele mobilskjermen og forhindrer scrolling/zooming */
         body { 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to bottom, #21a3c0, #093E4A);
@@ -23,7 +22,6 @@
             align-items: center;
         }
 
-        /* Hovedkortet */
         .vote-card {
             background: #ffffff;
             border: 6px solid #093E4A;
@@ -37,7 +35,6 @@
             box-sizing: border-box;
         }
 
-        /* Retro-overskriften */
         .arcade-title {
             font-family: 'Press Start 2P', monospace;
             font-size: 26px;
@@ -55,7 +52,6 @@
             line-height: 1.5;
         }
 
-        /* --- DE GIGANTISKE NØYTRALE KNAPPENE --- */
         .vote-btn {
             display: flex;
             align-items: center;
@@ -71,12 +67,10 @@
             cursor: pointer;
             transition: all 0.1s;
             text-shadow: 4px 4px 0px #1B447A; 
-            
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Felles blåfarge for begge knappene */
         .btn-neutral {
             background: #3FA9F5;
             border-bottom: 10px solid #2478B4;
@@ -88,13 +82,12 @@
             margin-bottom: 35px; 
         }
 
-        /* Oppsett for ikon og tekst inni knappen */
         .btn-icon {
             flex: 0 0 120px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-left: 35px; /* Økt fra 20px for å trekke ikonene mer mot midten */
+            margin-left: 35px; 
         }
 
         .btn-text {
@@ -102,10 +95,9 @@
             text-align: center;
             font-size: 33px; 
             line-height: 1.4;
-            padding-right: 35px; /* Matchende avstand for perfekt visuell symmetri */
+            padding-right: 35px; 
         }
 
-        /* Takkemeldingen som dukker opp etter stemmegivning */
         #thank-you-screen {
             display: none;
             padding: 30px 10px;
@@ -143,7 +135,6 @@
 <body>
 
     <div class="vote-card">
-        
         <!-- SELVE AVSTEMNINGEN -->
         <div id="vote-screen">
             <div class="arcade-title">AVSTEMMING</div>
@@ -152,12 +143,10 @@
                 En stang uten vekt, eller med vekt i toppen?
             </div>
             
-            <!-- KNAPP 1: UTEN VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('uten')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
                         <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
-                            <!-- Hovedstang -->
                             <path d="M 40,20 V 120 A 10 5 0 0 0 60 120 V 20 Z" />
                             <ellipse cx="50" cy="20" rx="10" ry="5" />
                         </g>
@@ -166,19 +155,13 @@
                 <div class="btn-text">UTEN<br>VEKT</div>
             </button>
             
-            <!-- KNAPP 2: MED VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('med')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
                         <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
-                            <!-- Nederste stang -->
                             <path d="M 40,50 V 120 A 10 5 0 0 0 60 120 V 50 Z" />
-                            
-                            <!-- Vekt-disken -->
                             <path d="M 10,30 V 50 A 40 20 0 0 0 90 50 V 30 Z" />
                             <ellipse cx="50" cy="30" rx="40" ry="20" />
-                            
-                            <!-- Øverste lille stang -->
                             <path d="M 40,20 V 30 A 10 5 0 0 0 60 30 V 20 Z" />
                             <ellipse cx="50" cy="20" rx="10" ry="5" />
                         </g>
@@ -204,16 +187,40 @@
             <div class="thank-you-title">TAKK FOR<br>DIN STEMME!</div>
             <div class="thank-you-sub">Følg med på storskjermen, etter at vi har spilt og forsket, for å se hva folk trodde.</div>
         </div>
-
     </div>
 
-    <script>
-        function sendVote(valg) {
+    <!-- Firebase-logikken for mobilen -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCh19JG3trLOAFjergZVvjUph0K-IjMeEk",
+            authDomain: "balansemesteren.firebaseapp.com",
+            databaseURL: "https://balansemesteren-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "balansemesteren",
+            storageBucket: "balansemesteren.firebasestorage.app",
+            messagingSenderId: "687751001496",
+            appId: "1:687751001496:web:0bf1d2a7da5d163122e7ed"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Vi fester funksjonen til vinduet (window) slik at HTML-knappene kan finne den
+        window.sendVote = function(valg) {
             document.getElementById('vote-screen').style.display = 'none';
             document.getElementById('thank-you-screen').style.display = 'block';
             
-            // Her skal databasen (Firebase) kobles på senere!
-            console.log("Brukeren stemte på: " + valg);
+            // Skyter stemmen opp til skyen!
+            push(ref(db, 'stemmer'), {
+                valg: valg,
+                tidspunkt: Date.now()
+            }).then(() => {
+                console.log("Stemme registrert live: " + valg);
+            }).catch((error) => {
+                console.error("Feil ved lagring i skyen:", error);
+            });
         }
     </script>
 </body>
