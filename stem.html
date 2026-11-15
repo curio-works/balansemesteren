@@ -48,46 +48,62 @@
         }
 
         .question-text {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 700;
             color: #333;
             margin-bottom: 35px;
             line-height: 1.5;
         }
 
-        /* Gigantiske avstemmingsknapper */
+        /* --- DE GIGANTISKE NØYTRALE KNAPPENE --- */
         .vote-btn {
-            display: block;
+            display: flex;
+            align-items: center;
             width: 100%;
-            padding: 25px 15px;
-            margin-bottom: 20px;
+            min-height: 170px;
+            padding: 15px;
+            margin-bottom: 25px;
             font-family: 'Press Start 2P', monospace;
-            font-size: 22px;
             font-weight: bold;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.1s;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+            text-shadow: 4px 4px 0px #1B447A; 
             
-            /* Hindrer markering av tekst ved ivrig trykking */
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Fargekodet mot index.html for gjenkjennelse */
-        .btn-uten {
-            background: #ff0055;
-            border-bottom: 8px solid #b3003b;
+        /* Felles blåfarge for begge knappene */
+        .btn-neutral {
+            background: #3FA9F5;
+            border-bottom: 10px solid #2478B4;
         }
-        .btn-uten:active { transform: translateY(8px); border-bottom: 0px solid #b3003b; margin-bottom: 28px; }
+        
+        .btn-neutral:active { 
+            transform: translateY(10px); 
+            border-bottom: 0px solid #2478B4; 
+            margin-bottom: 35px; 
+        }
 
-        .btn-med {
-            background: #00A896;
-            border-bottom: 8px solid #007366;
+        /* Oppsett for ikon og tekst inni knappen */
+        .btn-icon {
+            flex: 0 0 120px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 35px; /* Økt fra 20px for å trekke ikonene mer mot midten */
         }
-        .btn-med:active { transform: translateY(8px); border-bottom: 0px solid #007366; margin-bottom: 28px; }
+
+        .btn-text {
+            flex-grow: 1; 
+            text-align: center;
+            font-size: 33px; 
+            line-height: 1.4;
+            padding-right: 35px; /* Matchende avstand for perfekt visuell symmetri */
+        }
 
         /* Takkemeldingen som dukker opp etter stemmegivning */
         #thank-you-screen {
@@ -136,14 +152,45 @@
                 En stang uten vekt, eller med vekt i toppen?
             </div>
             
-            <button class="vote-btn btn-uten" onclick="sendVote('uten')">UTEN VEKT</button>
-            <button class="vote-btn btn-med" onclick="sendVote('med')">MED VEKT</button>
+            <!-- KNAPP 1: UTEN VEKT -->
+            <button class="vote-btn btn-neutral" onclick="sendVote('uten')">
+                <div class="btn-icon">
+                    <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                            <!-- Hovedstang -->
+                            <path d="M 40,20 V 120 A 10 5 0 0 0 60 120 V 20 Z" />
+                            <ellipse cx="50" cy="20" rx="10" ry="5" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="btn-text">UTEN<br>VEKT</div>
+            </button>
+            
+            <!-- KNAPP 2: MED VEKT -->
+            <button class="vote-btn btn-neutral" onclick="sendVote('med')">
+                <div class="btn-icon">
+                    <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                            <!-- Nederste stang -->
+                            <path d="M 40,50 V 120 A 10 5 0 0 0 60 120 V 50 Z" />
+                            
+                            <!-- Vekt-disken -->
+                            <path d="M 10,30 V 50 A 40 20 0 0 0 90 50 V 30 Z" />
+                            <ellipse cx="50" cy="30" rx="40" ry="20" />
+                            
+                            <!-- Øverste lille stang -->
+                            <path d="M 40,20 V 30 A 10 5 0 0 0 60 30 V 20 Z" />
+                            <ellipse cx="50" cy="20" rx="10" ry="5" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="btn-text">MED<br>VEKT</div>
+            </button>
         </div>
 
         <!-- KVITTERING ETTER VALG -->
         <div id="thank-you-screen">
             <div class="success-icon">
-                <!-- Pikselert retro-hake skalert opp til 120x120 -->
                 <svg viewBox="0 0 14 11" width="120" height="120" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(4px 4px 0px rgba(0, 168, 150, 0.15));">
                     <rect x="0" y="5" width="2" height="2" fill="#00A896"/>
                     <rect x="2" y="7" width="2" height="2" fill="#00A896"/>
@@ -162,13 +209,10 @@
 
     <script>
         function sendVote(valg) {
-            // 1. Skjul avstemnings-knappene
             document.getElementById('vote-screen').style.display = 'none';
-            
-            // 2. Vis takkemeldingen
             document.getElementById('thank-you-screen').style.display = 'block';
             
-            // 3. Her skal databasen (Firebase) kobles på senere!
+            // Her skal databasen (Firebase) kobles på senere!
             console.log("Brukeren stemte på: " + valg);
         }
     </script>
