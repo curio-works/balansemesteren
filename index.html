@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
+        /* Importerer DSEG7-fonten direkte fra nett */
         @font-face {
             font-family: 'DSEG7 Classic';
             src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-BoldItalic.woff2') format('woff2');
@@ -30,6 +31,7 @@
             align-items: center; 
         }
 
+        /* --- MOBIL- OG KOMPATIBILITETSSKJERM --- */
         .mobile-warning-screen {
             display: none; 
             flex-direction: column;
@@ -52,6 +54,7 @@
         .vote-link-btn:active { transform: translateY(6px); box-shadow: 0 0px 0 #853600; }
         .vote-link-btn:hover { background: #f56500; }
 
+        /* --- HOVEDSPILLET --- */
         .game-layout-wrapper {
             position: relative;
             width: 100%;
@@ -312,7 +315,6 @@
         .vote-result { text-align: center; opacity: 0; transform: translateY(15px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .vote-result.revealed { opacity: 1; transform: translateY(0); }
         .vote-title { font-size: 14px; color: #666; line-height: 1.4; margin-bottom: 8px; }
-        /* Tildelt ID for Firebase-oppdatering her: */
         .vote-pct { font-size: 40px; font-weight: bold; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); }
         
         .highlight-low { color: #ff0055; } .highlight-high { color: #00A896; }
@@ -329,20 +331,14 @@
         
         .vote-divider-horizontal { width: 100%; border-top: 2px dashed #ccc; margin: 30px 0; }
         
-        .valglokale-container { display: flex; align-items: flex-start; text-align: center; font-family: 'Poppins', sans-serif; }
+        .valglokale-container { display: flex; align-items: stretch; text-align: center; font-family: 'Poppins', sans-serif; }
         .valglokale-qr { flex: 1; padding: 0 40px; border-right: 2px dashed #ccc; display: flex; flex-direction: column; align-items: center; }
         .valglokale-pc { flex: 1; padding: 0 40px; display: flex; flex-direction: column; align-items: center; }
         
-        .valglokale-qr h3, .valglokale-pc h3 { font-size: 18px; color: #093E4A; margin-top: 0; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
-        .valglokale-qr p, .valglokale-pc p { font-size: 13px; color: #666; margin-bottom: 25px; font-weight: 600; min-height: 40px; }
+        /* HER ER OVERSKRIFTENE GJORT STØRRE: Økt fra 18px til 22px */
+        .valglokale-qr h3, .valglokale-pc h3 { font-size: 22px; color: #093E4A; margin-top: 0; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
         
-        .qr-placeholder { 
-            width: 250px; height: 250px; background-color: white; margin: 0 auto; display: flex; 
-            align-items: center; justify-content: center; border: 4px solid #093E4A; border-radius: 12px;
-            background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%), linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%), linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
-            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-        }
-        .qr-placeholder span { background: white; padding: 6px 12px; font-weight: bold; border: 2px solid #333; font-family: 'Press Start 2P', monospace; font-size: 12px; color: #333; }
+        .valglokale-qr p, .valglokale-pc p { font-size: 17px; color: #666; margin-bottom: 25px; font-weight: 600; min-height: 40px; }
         
         .vote-link-btn-large {
             width: 250px; height: 250px; background: #d85900; color: white; border: none;
@@ -470,7 +466,6 @@
                             <div class="col-label highlight-low">UTEN<br>VEKT</div>
                             <div class="vote-result highlight-low" id="vote-res-low">
                                 <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
-                                <!-- Nullstilt til 0% for å stå klar til Firebase-data -->
                                 <div class="vote-pct" id="vote-pct-low">0%</div>
                             </div>
                         </div>
@@ -489,7 +484,6 @@
                             <div class="col-label highlight-high">MED<br>VEKT</div>
                             <div class="vote-result highlight-high" id="vote-res-high">
                                 <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
-                                <!-- Nullstilt til 0% for å stå klar til Firebase-data -->
                                 <div class="vote-pct" id="vote-pct-high">0%</div>
                             </div>
                         </div>
@@ -520,26 +514,64 @@
         <div class="curio-arcade-panel">
             <div class="close-btn" onclick="toggleVoteModal()">[X] LUKK</div>
             
-            <div class="arcade-header" style="font-size: 36px; margin-bottom: 25px;">AVSTEMMING</div>
-            <div class="arcade-sub" style="font-size: 26px; font-weight: 700; line-height: 1.5; margin-bottom: 0px; color: #093E4A; font-family: 'Poppins', sans-serif; letter-spacing: 1px;">
-                HVA ER ENKLEST Å BALANSERE?<br>EN STANG UTEN VEKT ELLER MED VEKT I TOPPEN?
+            <div class="arcade-header" style="font-size: 36px; margin-bottom: 0px;">AVSTEMMING</div>
+            
+            <div class="vote-divider-horizontal" style="margin: 20px 0 30px 0;"></div>
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 0px;">
+                
+                <div style="flex: 1; display: flex; justify-content: center;">
+                    <div style="width: 75px;">
+                        <svg viewBox="0 0 100 140" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="#093E4A" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                                <path d="M 40,20 V 120 A 10 5 0 0 0 60 120 V 20 Z" />
+                                <ellipse cx="50" cy="20" rx="10" ry="5" />
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="arcade-sub" style="flex: 0 1 auto; max-width: 65%; font-size: 26px; font-weight: 700; line-height: 1.5; margin-bottom: 0px; color: #093E4A; font-family: 'Poppins', sans-serif; letter-spacing: 1px; text-align: center;">
+                    HVA ER ENKLEST Å BALANSERE?<br>EN STANG UTEN VEKT ELLER MED VEKT<br>I TOPPEN?
+                </div>
+                
+                <div style="flex: 1; display: flex; justify-content: center;">
+                    <div style="width: 75px;">
+                        <svg viewBox="0 0 100 140" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="#093E4A" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                                <path d="M 40,50 V 120 A 10 5 0 0 0 60 120 V 50 Z" />
+                                <path d="M 10,30 V 50 A 40 20 0 0 0 90 50 V 30 Z" />
+                                <ellipse cx="50" cy="30" rx="40" ry="20" />
+                                <path d="M 40,20 V 30 A 10 5 0 0 0 60 30 V 20 Z" />
+                                <ellipse cx="50" cy="20" rx="10" ry="5" />
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
             </div>
             
             <div class="vote-divider-horizontal"></div>
             
             <div class="valglokale-container">
                 <div class="valglokale-qr">
-                    <h3>PUBLIKUM:</h3>
-                    <p>Skann for å stemme med mobilen!</p>
-                    <div class="qr-placeholder">
-                        <span>[ QR-KODE ]</span>
+                    <div style="width: 100%;">
+                        <h3>PUBLIKUM:</h3>
+                        <p>Skann for å stemme med mobilen!</p>
                     </div>
+                    
+                    <img src="qrcode_curio-works.github.io.png" alt="Skann for å stemme" style="width: 250px; height: 250px; border: 4px solid #093E4A; border-radius: 12px; padding: 15px; background: white; image-rendering: crisp-edges; box-sizing: border-box; margin-top: auto; margin-bottom: 8px;">
+                    
                 </div>
                 
                 <div class="valglokale-pc">
-                    <h3>ELEVER:</h3>
-                    <p>Klikk her for å stemme direkte på denne PC-en.</p>
-                    <a href="stem.html" target="_blank" class="vote-link-btn-large">
+                    <div style="width: 100%;">
+                        <h3>ELEVER:</h3>
+                        <!-- TEKST OPPDATERT: Fjernet ordet "direkte" -->
+                        <p>Klikk her for å stemme på denne PC-en.</p>
+                    </div>
+                    
+                    <a href="stem.html" target="_blank" class="vote-link-btn-large" style="margin-top: auto; margin-bottom: 8px;">
                         <span class="largetext">GÅ TIL</span>
                         <span class="smalltext">AVSTEMMING</span>
                     </a>
@@ -675,7 +707,6 @@
             let prosentUten = (snittUten / dynamiskTak) * 100;
             let prosentMed = (snittMed / dynamiskTak) * 100;
             
-            // Hvis vi ikke har data ennå, sett søylene til 0.
             if (alleResultaterUten.length === 0) prosentUten = 0;
             if (alleResultaterMed.length === 0) prosentMed = 0;
 
@@ -978,7 +1009,6 @@
                 
                 oppdaterArkadePanel();
 
-                // Nullstill også stemmene i Firebase hvis funksjonen er lastet
                 if (window.nullstillStemmerFirebase) {
                     window.nullstillStemmerFirebase();
                 }
