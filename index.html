@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
+        /* Importerer DSEG7-fonten direkte fra nett */
         @font-face {
             font-family: 'DSEG7 Classic';
             src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-BoldItalic.woff2') format('woff2');
@@ -127,137 +128,116 @@
         .resultat-liste li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f4f4f9; font-size: 13px; }
         .resultat-liste li strong { font-family: monospace; }
 
-        .graf-boks { flex: 2; min-width: 200px; padding: 10px; border-radius: 10px; background: #fafafa; transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; }
-        .graf-boks h2 { text-align: center; font-weight: 700; margin-top: 0; margin-bottom: 5px; font-size: 1.2em; }
+        /* Normalvisning for grafer-boksen */
+        .graf-boks { 
+            flex: 2; min-width: 200px; padding: 10px; border-radius: 10px; background: #fafafa; 
+            transition: all 0.3s ease; display: flex; flex-direction: column; position: relative; 
+        }
+        
+        .venstre-panel { display: contents; } 
+        .venstre-panel h2 { order: 1; text-align: center; font-weight: 700; margin-top: 0; margin-bottom: 5px; font-size: 1.2em; }
+        canvas { order: 2; width: 100%; border: 1px solid #ddd; background: white; border-radius: 5px; aspect-ratio: 1 / 1; }
+        .hoyre-panel { order: 3; }
+        .venstre-panel .fullskjerm-kontroller { order: 4; text-align: center; margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
+        .venstre-panel .fullscreen-kredittering { display: none; } 
+
         .spiller-navn-display { display: none; }
-        canvas { width: 100%; border: 1px solid #ddd; background: white; border-radius: 5px; aspect-ratio: 1 / 1; }
         
         .illustrasjon-midten { flex: 1; min-width: 100px; max-width: 150px; }
         .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .inaktiv { border: 2px solid #333; opacity: 0.4; box-shadow: none; }
         
         .score-tavle { 
-            background: #165B6A; 
-            color: white; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 15px; 
-            margin-top: 10px; 
-            border-radius: 5px; 
-            font-family: 'Poppins', sans-serif; 
-            font-weight: 600; 
-            font-size: 16px; 
-            border: none; 
-            box-sizing: border-box; 
+            background: #165B6A; color: white; display: flex; justify-content: center; align-items: center;
+            gap: 12px; padding: 8px 15px; margin-top: 10px; border-radius: 5px; 
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; box-sizing: border-box; 
         }
         
         .score-tavle span { 
-            font-family: 'DSEG7 Classic', monospace; 
-            font-style: italic; 
-            font-weight: 700;
-            color: #ff2222; 
-            background-color: #050505; 
-            padding: 4px 12px;
-            border-radius: 4px;
-            border: 2px solid #093E4A; 
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.8); 
-            min-width: 50px; 
-            text-align: center;
-            line-height: 1;
+            font-family: 'DSEG7 Classic', monospace; font-style: italic; font-weight: 700; color: #ff2222; 
+            background-color: #050505; padding: 4px 12px; border-radius: 4px; border: 2px solid #093E4A; 
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.8); min-width: 50px; text-align: center; line-height: 1;
         }
 
-        .fullskjerm-kontroller { text-align: center; margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
         .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 8px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-weight: 600; }
         .fullskjerm-btn:hover { background-color: #7FC0D0; } 
         .start-fullskjerm-btn, .tid-visning-fullskjerm { display: none; }
         .tid-visning-fullskjerm { font-variant-numeric: tabular-nums; white-space: nowrap; }
         .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 16px !important; }
 
-        /* --- FULLSKJERM-STILER --- */
-        .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 300px; grid-template-rows: 1fr; align-items: center; }
-        .graf-boks:fullscreen h2 { position: absolute; top: 100px; left: 40px; width: 250px; font-size: 3em; margin: 0; text-align: center; }
+        /* --- FULLSKJERM-STILER (Trekolloners ramme-layout) --- */
+        .graf-boks:fullscreen { 
+            background: #f0f2f5; 
+            width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; 
+            display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 40px; 
+        }
+        
+        .graf-boks:fullscreen .venstre-panel,
+        .graf-boks:fullscreen .hoyre-panel {
+            display: flex; flex-direction: column;
+            height: 90vh; width: 340px; background: #fafafa;
+            border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box;
+        }
+        
+        .graf-boks:fullscreen .venstre-panel { order: 1; }
+        .graf-boks:fullscreen .hoyre-panel { order: 3; justify-content: center; }
         
         .graf-boks:fullscreen canvas { 
-            grid-column: 2; 
-            grid-row: 1; 
-            height: 90vh; 
-            width: auto; 
-            margin: 0 auto; 
-            border: 3px solid #093E4A; 
-            border-radius: 8px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            order: 2; height: 90vh; width: auto; margin: 0; 
+            border: 4px solid #093E4A; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
         }
         
-        .graf-boks:fullscreen .fullskjerm-kontroller { grid-column: 1; grid-row: 1; display: flex; flex-direction: column; gap: 30px; margin-top: 80px; justify-content: center; }
-        .hoyre-panel { display: block; width: 100%; }
-        .graf-boks:fullscreen .hoyre-panel { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
-        .graf-boks:fullscreen .spiller-navn-display { display: block; text-align: center; font-size: 2.5em; font-weight: 700; color: #093E4A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+        /* Venstre panel-detaljer */
+        .graf-boks:fullscreen .venstre-panel h2 { 
+            order: 1; position: static; width: 100%; font-size: 40px; margin: 0; padding: 40px 0; 
+            text-align: center; border-bottom: 2px solid #ccc; color: #000; 
+        }
         
-        .graf-boks:fullscreen .score-tavle { 
-            background: #165B6A;
-            font-size: 24px; 
-            padding: 30px 20px; 
-            margin-top: 0; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
+        .graf-boks:fullscreen .fullskjerm-kontroller { 
+            order: 2; margin: auto; display: flex; flex-direction: column; gap: 30px; 
+            padding: 0 40px; width: 100%; box-sizing: border-box; 
+        }
+        
+        .graf-boks:fullscreen .fullscreen-kredittering { 
+            order: 3; display: flex; flex-direction: column; align-items: center; 
+            margin-bottom: 40px; position: static; width: 100%; box-sizing: border-box; 
+        }
+        
+        /* OPPDATERT: Typografien for vannmerket med økt letter-spacing */
+        .graf-boks:fullscreen .kred-wrapper {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            border: none;
-            border-radius: 12px;
-            width: 100%;
-            box-sizing: border-box; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+            opacity: 0.6;
+        }
+        .graf-boks:fullscreen .kred-tittel { 
+            font-size: 22px; letter-spacing: 2.5px; font-weight: 700; color: #79959c; 
+            margin-bottom: 2px; text-align: center; white-space: nowrap; 
+        }
+        .graf-boks:fullscreen .kred-sub { 
+            font-size: 10px; 
+            letter-spacing: 3.1px; /* Økt fra 1.8px til 3.1px */
+            font-weight: 600; color: #79959c; 
+            text-align: center; white-space: nowrap; 
+            margin-right: -3.1px; /* Kompenserer for letter-spacing på siste bokstav */
         }
         
+        /* Knapper i fullskjerm */
+        .graf-boks:fullscreen .fullskjerm-btn { font-size: 22px; padding: 20px; background-color: #DF6C08; color: white; width: 100%; border-radius: 8px; }
+        .graf-boks:fullscreen .fullskjerm-btn:hover { background-color: #E46B00; }
+        .graf-boks:fullscreen .start-fullskjerm-btn { display: block; font-size: 22px; padding: 20px; width: 100%; background-color: #165B6A !important; color: white !important; border-radius: 8px; }
+        .graf-boks:fullscreen .tid-visning-fullskjerm { display: block; font-size: 22px; font-weight: 700; color: #333; text-align: center; }
+        
+        /* Høyre panel-detaljer */
+        .graf-boks:fullscreen .score-tavle { 
+            background: #165B6A; font-size: 28px; padding: 40px 30px; margin: 0 auto; display: flex; 
+            flex-direction: column; justify-content: center; align-items: center; border: none; 
+            border-radius: 12px; width: 80%; box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+        }
         .graf-boks:fullscreen .score-tavle span { 
-            display: block; 
-            font-size: 90px; 
-            margin-top: 20px; 
-            padding: 20px 10px;
-            background-color: #050505;
-            border: 4px solid #093E4A;
-            border-radius: 12px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,1);
-            width: 100%; 
-            box-sizing: border-box;
-            line-height: 1;
-            color: #ff2222; 
-            text-shadow: 0 0 15px rgba(255, 34, 34, 0.7); 
-        }
-        
-        .graf-boks:fullscreen .fullskjerm-btn { font-size: 20px; padding: 15px 30px; background-color: #DF6C08; color: white; width: 100%; }
-        .graf-boks:fullscreen .fullskjerm-btn:hover { background-color: #E46B00; filter: brightness(1.15) saturate(1.2); }
-        .graf-boks:fullscreen .start-fullskjerm-btn { display: block; font-size: 20px; padding: 15px 30px; width: 100%; background-color: #093E4A !important; color: white !important; }
-        .graf-boks:fullscreen .tid-visning-fullskjerm { display: block; font-size: 32px; font-weight: 700; color: #333; }
-
-        /* --- KREDITTERING (Vannmerke) i Fullskjerm --- */
-        .fullscreen-kredittering { display: none; }
-        .graf-boks:fullscreen .fullscreen-kredittering {
-            display: inline-block;
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            opacity: 0.5; 
-        }
-        .graf-boks:fullscreen .kred-tittel {
-            font-size: 21px;
-            font-weight: 700;
-            color: #093E4A;
-            letter-spacing: 2px;
-            margin-bottom: -4px;
-            white-space: nowrap;
-        }
-        .graf-boks:fullscreen .kred-sub {
-            font-size: 11px;
-            font-weight: 600;
-            color: #093E4A;
-            letter-spacing: 2.15px; 
-            white-space: nowrap;
-            margin-left: 2px; 
+            display: block; font-size: 110px; margin-top: 30px; padding: 20px 10px; background-color: #050505; 
+            border: 4px solid #093E4A; border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,1); 
+            width: 100%; box-sizing: border-box; line-height: 1; color: #ff2222; text-shadow: 0 0 15px rgba(255, 34, 34, 0.7); 
         }
 
         /* --- GLOBAL FOOTER PÅ FORSIDEN --- */
@@ -395,45 +375,67 @@
                     <h3>Poeng Uten Vekt</h3>
                     <ul class="resultat-liste" id="listeUten"></ul>
                 </div>
+                
+                <!-- BOKS 1: Uten Vekt (Med usynlig venstre-panel for fullskjerm-layout) -->
                 <div class="graf-boks aktiv" id="boksUtenVekt">
-                    <h2>Uten vekt</h2>
+                    
+                    <div class="venstre-panel">
+                        <h2>Uten vekt</h2>
+                        
+                        <div class="fullskjerm-kontroller">
+                            <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                            <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                            <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Fullskjerm ⛶</button>
+                        </div>
+                        
+                        <div class="fullscreen-kredittering">
+                            <div class="kred-wrapper">
+                                <div class="kred-tittel">BALANSEMESTEREN</div>
+                                <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <canvas id="canvasUtenVekt" width="500" height="500"></canvas>
+                    
                     <div class="hoyre-panel">
                         <div class="spiller-navn-display" id="displayNavnUten"></div>
                         <div class="score-tavle">Vinglescore: <span id="scoreUten">0</span></div>
                     </div>
-                    <div class="fullskjerm-kontroller">
-                        <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
-                        <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksUtenVekt')">Fullskjerm ⛶</button>
-                    </div>
                     
-                    <div class="fullscreen-kredittering">
-                        <div class="kred-tittel">BALANSEMESTEREN</div>
-                        <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
-                    </div>
                 </div>
                 
                 <div class="illustrasjon-midten"></div>
 
+                <!-- BOKS 2: Med Vekt -->
                 <div class="graf-boks inaktiv" id="boksMedVekt">
-                    <h2>Med vekt</h2>
+                    
+                    <div class="venstre-panel">
+                        <h2>Med vekt</h2>
+                        
+                        <div class="fullskjerm-kontroller">
+                            <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
+                            <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
+                            <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Fullskjerm ⛶</button>
+                        </div>
+                        
+                        <div class="fullscreen-kredittering">
+                            <div class="kred-wrapper">
+                                <div class="kred-tittel">BALANSEMESTEREN</div>
+                                <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <canvas id="canvasMedVekt" width="500" height="500"></canvas>
+                    
                     <div class="hoyre-panel">
                         <div class="spiller-navn-display" id="displayNavnMed"></div>
                         <div class="score-tavle">Vinglescore: <span id="scoreMed">0</span></div>
                     </div>
-                    <div class="fullskjerm-kontroller">
-                        <button class="start-fullskjerm-btn start-test-trigger" disabled>Start test</button>
-                        <div class="tid-visning-fullskjerm tidtaker-tekst-felles">Tid: 15s</div>
-                        <button class="fullskjerm-btn" onclick="toggleFullskjerm('boksMedVekt')">Fullskjerm ⛶</button>
-                    </div>
-
-                    <div class="fullscreen-kredittering">
-                        <div class="kred-tittel">BALANSEMESTEREN</div>
-                        <div class="kred-sub">ET STEM-SPILL FRA CURIOWORKS</div>
-                    </div>
+                    
                 </div>
+                
                 <div class="liste-boks inaktiv" id="listeBoksMedVekt">
                     <h3>Poeng Med Vekt</h3>
                     <ul class="resultat-liste" id="listeMed"></ul>
@@ -1065,17 +1067,15 @@
         const rundeRef = ref(db, 'status/aktiv_runde');
         const stemmerRef = ref(db, 'stemmer');
 
-        // Lytter på rundenummeret
         onValue(rundeRef, (snapshot) => {
             if (snapshot.exists()) {
                 gjeldendeRunde = snapshot.val();
             } else {
                 set(rundeRef, 1);
             }
-            oppdaterStemmerProsent(); // Oppdater skjermen umiddelbart når ny runde starter
+            oppdaterStemmerProsent();
         });
 
-        // Lytter på alle stemmer
         onValue(stemmerRef, (snapshot) => {
             alleStemmerData = [];
             snapshot.forEach((childSnapshot) => {
@@ -1084,13 +1084,11 @@
             oppdaterStemmerProsent();
         });
 
-        // Hjelpefunksjon som KUN teller stemmer fra gjeldende runde
         function oppdaterStemmerProsent() {
             let stemmerUten = 0;
             let stemmerMed = 0;
             
             alleStemmerData.forEach((data) => {
-                // Vi regner bare med de stemmene som tilhører runden vi er i nå
                 if (data.runde === gjeldendeRunde) {
                     if (data.valg === 'uten') stemmerUten++;
                     else if (data.valg === 'med') stemmerMed++;
@@ -1105,9 +1103,7 @@
             document.getElementById('vote-pct-high').innerText = pstMed + '%';
         }
 
-        // Kalles fra Nullstill-knappen lenger oppe i dokumentet
         window.nullstillStemmerFirebase = function() {
-            // Vi sletter ingenting lenger, vi bare hopper til neste rundenummer!
             set(rundeRef, gjeldendeRunde + 1).then(() => {
                 console.log("Ny runde startet: Runde " + (gjeldendeRunde + 1));
             }).catch((err) => console.error("Feil ved start av ny runde:", err));
