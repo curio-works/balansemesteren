@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        /* Importerer DSEG7-fonten direkte fra nett */
         @font-face {
             font-family: 'DSEG7 Classic';
             src: url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-BoldItalic.woff2') format('woff2');
@@ -28,10 +27,9 @@
             padding: 10px; 
             display: flex;
             flex-direction: column;
-            align-items: center; /* Sentrerer innholdet horisontalt */
+            align-items: center; 
         }
 
-        /* --- MOBIL- OG KOMPATIBILITETSSKJERM --- */
         .mobile-warning-screen {
             display: none; 
             flex-direction: column;
@@ -54,13 +52,12 @@
         .vote-link-btn:active { transform: translateY(6px); box-shadow: 0 0px 0 #853600; }
         .vote-link-btn:hover { background: #f56500; }
 
-        /* --- HOVEDSPILLET --- */
         .game-layout-wrapper {
             position: relative;
             width: 100%;
             max-width: 1600px; 
             margin: 0 auto;
-            padding: 15px 0 5px 0; /* Minimal luft nederst mot teksten */
+            padding: 15px 0 5px 0; 
             display: flex;
             align-items: stretch; 
             justify-content: center;
@@ -137,24 +134,47 @@
         .aktiv { border: 2px solid #333; opacity: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .inaktiv { border: 2px solid #333; opacity: 0.4; box-shadow: none; }
         
-        .score-tavle { background: #165B6A; color: white; text-align: center; padding: 5px 10px; margin-top: 8px; border-radius: 5px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 16px; border: none; box-sizing: border-box; }
+        .score-tavle { 
+            background: #165B6A; 
+            color: white; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 15px; 
+            margin-top: 10px; 
+            border-radius: 5px; 
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 600; 
+            font-size: 16px; 
+            border: none; 
+            box-sizing: border-box; 
+        }
         
-        /* DSEG-fonten på standardvisningen */
         .score-tavle span { 
             font-family: 'DSEG7 Classic', monospace; 
             font-style: italic; 
             font-weight: 700;
+            color: #ff2222; 
+            background-color: #050505; 
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 2px solid #093E4A; 
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.8); 
+            min-width: 50px; 
+            text-align: center;
+            line-height: 1;
         }
 
-        .fullskjerm-kontroller { text-align: center; margin-top: 8px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
-        .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 6px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; }
+        .fullskjerm-kontroller { text-align: center; margin-top: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; }
+        .fullskjerm-btn { background-color: #92D3E2; color: #333; border: none; padding: 8px 12px; font-size: 13px; border-radius: 5px; cursor: pointer; width: 100%; box-sizing: border-box; font-family: 'Poppins', sans-serif; font-weight: 600; }
         .fullskjerm-btn:hover { background-color: #7FC0D0; } 
         .start-fullskjerm-btn, .tid-visning-fullskjerm { display: none; }
         .tid-visning-fullskjerm { font-variant-numeric: tabular-nums; white-space: nowrap; }
         .tidtaker-tekst-felles { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 16px !important; }
 
         /* --- FULLSKJERM-STILER --- */
-        .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 250px; grid-template-rows: 1fr; align-items: center; }
+        .graf-boks:fullscreen { background: #fafafa; width: 100vw; height: 100vh; max-width: 100%; padding: 40px; box-sizing: border-box; position: relative; display: grid; grid-template-columns: 250px 1fr 300px; grid-template-rows: 1fr; align-items: center; }
         .graf-boks:fullscreen h2 { position: absolute; top: 100px; left: 40px; width: 250px; font-size: 3em; margin: 0; text-align: center; }
         
         .graf-boks:fullscreen canvas { 
@@ -172,14 +192,37 @@
         .hoyre-panel { display: block; width: 100%; }
         .graf-boks:fullscreen .hoyre-panel { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
         .graf-boks:fullscreen .spiller-navn-display { display: block; text-align: center; font-size: 2.5em; font-weight: 700; color: #093E4A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
-        .graf-boks:fullscreen .score-tavle { font-size: 22px; padding: 20px; margin-top: 0; display: flex; flex-direction: column; justify-content: center; border: none; }
+        
+        .graf-boks:fullscreen .score-tavle { 
+            background: #165B6A;
+            font-size: 24px; 
+            padding: 30px 20px; 
+            margin-top: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            border: none;
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
+        }
         
         .graf-boks:fullscreen .score-tavle span { 
             display: block; 
-            font-size: 110px; 
-            margin-top: 25px; 
+            font-size: 90px; 
+            margin-top: 20px; 
+            padding: 20px 10px;
+            background-color: #050505;
+            border: 4px solid #093E4A;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,1);
+            width: 100%; 
+            box-sizing: border-box;
             line-height: 1;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); 
+            color: #ff2222; 
+            text-shadow: 0 0 15px rgba(255, 34, 34, 0.7); 
         }
         
         .graf-boks:fullscreen .fullskjerm-btn { font-size: 20px; padding: 15px 30px; background-color: #DF6C08; color: white; width: 100%; }
@@ -207,7 +250,7 @@
             white-space: nowrap;
         }
         .graf-boks:fullscreen .kred-sub {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             color: #093E4A;
             letter-spacing: 2.15px; 
@@ -269,6 +312,7 @@
         .vote-result { text-align: center; opacity: 0; transform: translateY(15px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .vote-result.revealed { opacity: 1; transform: translateY(0); }
         .vote-title { font-size: 14px; color: #666; line-height: 1.4; margin-bottom: 8px; }
+        /* Tildelt ID for Firebase-oppdatering her: */
         .vote-pct { font-size: 40px; font-weight: bold; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); }
         
         .highlight-low { color: #ff0055; } .highlight-high { color: #00A896; }
@@ -426,7 +470,8 @@
                             <div class="col-label highlight-low">UTEN<br>VEKT</div>
                             <div class="vote-result highlight-low" id="vote-res-low">
                                 <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
-                                <div class="vote-pct">85%</div>
+                                <!-- Nullstilt til 0% for å stå klar til Firebase-data -->
+                                <div class="vote-pct" id="vote-pct-low">0%</div>
                             </div>
                         </div>
                         <div class="bar-and-score">
@@ -444,7 +489,8 @@
                             <div class="col-label highlight-high">MED<br>VEKT</div>
                             <div class="vote-result highlight-high" id="vote-res-high">
                                 <div class="vote-title">PUBLIKUMS<br>STEMMER:</div>
-                                <div class="vote-pct">15%</div>
+                                <!-- Nullstilt til 0% for å stå klar til Firebase-data -->
+                                <div class="vote-pct" id="vote-pct-high">0%</div>
                             </div>
                         </div>
                     </div>
@@ -475,7 +521,6 @@
             <div class="close-btn" onclick="toggleVoteModal()">[X] LUKK</div>
             
             <div class="arcade-header" style="font-size: 36px; margin-bottom: 25px;">AVSTEMMING</div>
-            <!-- Oppdatert til Poppins, gjort større, fetere og bredere for å strekke seg ut over boksene -->
             <div class="arcade-sub" style="font-size: 26px; font-weight: 700; line-height: 1.5; margin-bottom: 0px; color: #093E4A; font-family: 'Poppins', sans-serif; letter-spacing: 1px;">
                 HVA ER ENKLEST Å BALANSERE?<br>EN STANG UTEN VEKT ELLER MED VEKT I TOPPEN?
             </div>
@@ -483,7 +528,6 @@
             <div class="vote-divider-horizontal"></div>
             
             <div class="valglokale-container">
-                <!-- Venstre: For publikum (QR) -->
                 <div class="valglokale-qr">
                     <h3>PUBLIKUM:</h3>
                     <p>Skann for å stemme med mobilen!</p>
@@ -492,7 +536,6 @@
                     </div>
                 </div>
                 
-                <!-- Høyre: For klasserommet (Ny fane) -->
                 <div class="valglokale-pc">
                     <h3>ELEVER:</h3>
                     <p>Klikk her for å stemme direkte på denne PC-en.</p>
@@ -632,6 +675,7 @@
             let prosentUten = (snittUten / dynamiskTak) * 100;
             let prosentMed = (snittMed / dynamiskTak) * 100;
             
+            // Hvis vi ikke har data ennå, sett søylene til 0.
             if (alleResultaterUten.length === 0) prosentUten = 0;
             if (alleResultaterMed.length === 0) prosentMed = 0;
 
@@ -933,6 +977,11 @@
                 tegnResultatListe(listeMed, alleResultaterMed);
                 
                 oppdaterArkadePanel();
+
+                // Nullstill også stemmene i Firebase hvis funksjonen er lastet
+                if (window.nullstillStemmerFirebase) {
+                    window.nullstillStemmerFirebase();
+                }
             }
         });
 
@@ -956,7 +1005,53 @@
             link.click();
             document.body.removeChild(link);
         });
+    </script>
 
+    <!-- Firebase-logikken for PC-skjermen -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCh19JG3trLOAFjergZVvjUph0K-IjMeEk",
+            authDomain: "balansemesteren.firebaseapp.com",
+            databaseURL: "https://balansemesteren-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "balansemesteren",
+            storageBucket: "balansemesteren.firebasestorage.app",
+            messagingSenderId: "687751001496",
+            appId: "1:687751001496:web:0bf1d2a7da5d163122e7ed"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const stemmerRef = ref(db, 'stemmer');
+
+        // Lytter live på alle stemmer som kommer inn
+        onValue(stemmerRef, (snapshot) => {
+            let stemmerUten = 0;
+            let stemmerMed = 0;
+            
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                if (data.valg === 'uten') stemmerUten++;
+                else if (data.valg === 'med') stemmerMed++;
+            });
+            
+            let total = stemmerUten + stemmerMed;
+            let pstUten = total > 0 ? Math.round((stemmerUten / total) * 100) : 0;
+            let pstMed = total > 0 ? Math.round((stemmerMed / total) * 100) : 0;
+            
+            // Oppdater prosentene i "Vis Avstemming"-vinduet
+            document.getElementById('vote-pct-low').innerText = pstUten + '%';
+            document.getElementById('vote-pct-high').innerText = pstMed + '%';
+        });
+
+        // Gjør det mulig for Nullstill-knappen å tømme databasen i skyen
+        window.nullstillStemmerFirebase = function() {
+            remove(stemmerRef).then(() => {
+                console.log("Databasen er tømt for stemmer.");
+            }).catch((err) => console.error("Feil ved sletting:", err));
+        }
     </script>
 </body>
 </html>
