@@ -35,11 +35,8 @@
             display: none; 
             flex-direction: column;
             align-items: center;
-            
-            /* HER ER LØSNINGEN FOR Å LØFTE INNHOLDET OPP */
             justify-content: flex-start; 
             padding-top: 15vh; 
-            
             min-height: 90vh;
             text-align: center;
             color: white;
@@ -994,16 +991,13 @@
 
         alleStartKnapper.forEach(btn => { btn.addEventListener('click', startEksperiment); });
 
-        // OPPDATERT NULLSTILL-FUNKSJON MED PIN-KODE
         resetBtn.addEventListener('click', () => {
-            let passord = prompt("LÅST FUNKSJON: Tast inn PIN-kode for å nullstille databasen:");
+            let passord = prompt("LÅST FUNKSJON: Tast inn PIN-kode for å starte ny runde:");
             
-            // Hvis de trykker avbryt
             if (passord === null) return; 
             
-            // Sjekker om koden er riktig
-            if (passord === "4321") {
-                if (confirm("Koden var riktig! Er du HELT sikker på at du vil slette alt?")) {
+            if (passord === "1234") {
+                if (confirm("Koden var riktig! PC-poeng slettes, og publikum kan nå stemme på nytt. Sikker?")) {
                     localStorage.removeItem('balanseDataUten');
                     localStorage.removeItem('balanseDataMed');
                     
@@ -1015,12 +1009,13 @@
                     
                     oppdaterArkadePanel();
 
+                    // Starter ny Firebase-runde i stedet for å slette!
                     if (window.nullstillStemmerFirebase) {
                         window.nullstillStemmerFirebase();
                     }
                 }
             } else {
-                alert("Feil kode! Ingenting ble slettet.");
+                alert("Feil kode! Ingenting ble endret.");
             }
         });
 
@@ -1046,10 +1041,10 @@
         });
     </script>
 
-    <!-- Firebase-logikken for PC-skjermen -->
+    <!-- FIREBASE-LOGIKK (OPPDATERT FOR RUNDESYSTEM) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCh19JG3trLOAFjergZVvjUph0K-IjMeEk",
@@ -1063,33 +1058,59 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
+        let gjeldendeRunde = 1;
+        let alleStemmerData = [];
+        
+        const rundeRef = ref(db, 'status/aktiv_runde');
         const stemmerRef = ref(db, 'stemmer');
 
-        // Lytter live på alle stemmer som kommer inn
+        // Lytter på rundenummeret
+        onValue(rundeRef, (snapshot) => {
+            if (snapshot.exists()) {
+                gjeldendeRunde = snapshot.val();
+            } else {
+                set(rundeRef, 1);
+            }
+            oppdaterStemmerProsent(); // Oppdater skjermen umiddelbart når ny runde starter
+        });
+
+        // Lytter på alle stemmer
         onValue(stemmerRef, (snapshot) => {
+            alleStemmerData = [];
+            snapshot.forEach((childSnapshot) => {
+                alleStemmerData.push(childSnapshot.val());
+            });
+            oppdaterStemmerProsent();
+        });
+
+        // Hjelpefunksjon som KUN teller stemmer fra gjeldende runde
+        function oppdaterStemmerProsent() {
             let stemmerUten = 0;
             let stemmerMed = 0;
             
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                if (data.valg === 'uten') stemmerUten++;
-                else if (data.valg === 'med') stemmerMed++;
+            alleStemmerData.forEach((data) => {
+                // Vi regner bare med de stemmene som tilhører runden vi er i nå
+                if (data.runde === gjeldendeRunde) {
+                    if (data.valg === 'uten') stemmerUten++;
+                    else if (data.valg === 'med') stemmerMed++;
+                }
             });
             
             let total = stemmerUten + stemmerMed;
             let pstUten = total > 0 ? Math.round((stemmerUten / total) * 100) : 0;
             let pstMed = total > 0 ? Math.round((stemmerMed / total) * 100) : 0;
             
-            // Oppdater prosentene i "Vis Avstemming"-vinduet
             document.getElementById('vote-pct-low').innerText = pstUten + '%';
             document.getElementById('vote-pct-high').innerText = pstMed + '%';
-        });
+        }
 
-        // Gjør det mulig for Nullstill-knappen å tømme databasen i skyen
+        // Kalles fra Nullstill-knappen lenger oppe i dokumentet
         window.nullstillStemmerFirebase = function() {
-            remove(stemmerRef).then(() => {
-                console.log("Databasen er tømt for stemmer.");
-            }).catch((err) => console.error("Feil ved sletting:", err));
+            // Vi sletter ingenting lenger, vi bare hopper til neste rundenummer!
+            set(rundeRef, gjeldendeRunde + 1).then(() => {
+                console.log("Ny runde startet: Runde " + (gjeldendeRunde + 1));
+            }).catch((err) => console.error("Feil ved start av ny runde:", err));
         }
     </script>
 </body>
