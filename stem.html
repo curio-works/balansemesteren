@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
+        /* Sikrer at siden fyller hele mobilskjermen og forhindrer scrolling/zooming */
         body { 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to bottom, #21a3c0, #093E4A);
@@ -22,6 +23,7 @@
             align-items: center;
         }
 
+        /* Hovedkortet */
         .vote-card {
             background: #ffffff;
             border: 6px solid #093E4A;
@@ -35,6 +37,7 @@
             box-sizing: border-box;
         }
 
+        /* Retro-overskriften */
         .arcade-title {
             font-family: 'Press Start 2P', monospace;
             font-size: 26px;
@@ -52,9 +55,12 @@
             line-height: 1.5;
         }
 
+        /* --- DE GIGANTISKE NØYTRALE KNAPPENE (Oppdatert med flexbox-sentrering) --- */
         .vote-btn {
             display: flex;
             align-items: center;
+            justify-content: center; /* Låser innholdet (ikon + tekst) nøyaktig i midten */
+            gap: 20px; /* Fast og ryddig avstand mellom ikon og tekst */
             width: 100%;
             min-height: 170px;
             padding: 15px;
@@ -67,10 +73,12 @@
             cursor: pointer;
             transition: all 0.1s;
             text-shadow: 4px 4px 0px #1B447A; 
+            
             -webkit-user-select: none;
             user-select: none;
         }
 
+        /* Felles blåfarge for begge knappene */
         .btn-neutral {
             background: #3FA9F5;
             border-bottom: 10px solid #2478B4;
@@ -82,22 +90,21 @@
             margin-bottom: 35px; 
         }
 
+        /* Ikon-boksen trenger ikke lenger faste bredder eller marginer */
         .btn-icon {
-            flex: 0 0 120px; 
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-left: 35px; 
         }
 
+        /* Teksten låser seg nå inntil ikonet */
         .btn-text {
-            flex-grow: 1; 
-            text-align: center;
-            font-size: 33px; 
+            text-align: left; /* Venstrestiller teksten inntil ikonet */
+            font-size: 30px; /* Ørlite ned fra 33px for å passe perfekt på smale mobiler */
             line-height: 1.4;
-            padding-right: 35px; 
         }
 
+        /* Takkemeldingen som dukker opp etter stemmegivning */
         #thank-you-screen {
             display: none;
             padding: 30px 10px;
@@ -135,6 +142,7 @@
 <body>
 
     <div class="vote-card">
+        
         <!-- SELVE AVSTEMNINGEN -->
         <div id="vote-screen">
             <div class="arcade-title">AVSTEMMING</div>
@@ -143,10 +151,12 @@
                 En stang uten vekt, eller med vekt i toppen?
             </div>
             
+            <!-- KNAPP 1: UTEN VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('uten')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
                         <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                            <!-- Hovedstang -->
                             <path d="M 40,20 V 120 A 10 5 0 0 0 60 120 V 20 Z" />
                             <ellipse cx="50" cy="20" rx="10" ry="5" />
                         </g>
@@ -155,13 +165,19 @@
                 <div class="btn-text">UTEN<br>VEKT</div>
             </button>
             
+            <!-- KNAPP 2: MED VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('med')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
                         <g stroke="#000000" stroke-width="4" fill="#ffffff" stroke-linejoin="round">
+                            <!-- Nederste stang -->
                             <path d="M 40,50 V 120 A 10 5 0 0 0 60 120 V 50 Z" />
+                            
+                            <!-- Vekt-disken flyttet nesten helt til toppen -->
                             <path d="M 10,30 V 50 A 40 20 0 0 0 90 50 V 30 Z" />
                             <ellipse cx="50" cy="30" rx="40" ry="20" />
+                            
+                            <!-- Øverste lille stang (stikker bare såvidt opp) -->
                             <path d="M 40,20 V 30 A 10 5 0 0 0 60 30 V 20 Z" />
                             <ellipse cx="50" cy="20" rx="10" ry="5" />
                         </g>
@@ -187,6 +203,7 @@
             <div class="thank-you-title">TAKK FOR<br>DIN STEMME!</div>
             <div class="thank-you-sub">Følg med på storskjermen, etter at vi har spilt og forsket, for å se hva folk trodde.</div>
         </div>
+
     </div>
 
     <!-- Firebase-logikken for mobilen -->
