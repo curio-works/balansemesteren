@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
     <style>
-        /* Sikrer at siden fyller hele mobilskjermen og forhindrer scrolling/zooming */
         body { 
             font-family: 'Poppins', sans-serif; 
             background: linear-gradient(to bottom, #21a3c0, #093E4A);
@@ -23,7 +22,6 @@
             align-items: center;
         }
 
-        /* Hovedkortet */
         .vote-card {
             background: #ffffff;
             border: 6px solid #093E4A;
@@ -37,7 +35,6 @@
             box-sizing: border-box;
         }
 
-        /* Retro-overskriften */
         .arcade-title {
             font-family: 'Press Start 2P', monospace;
             font-size: 26px;
@@ -55,7 +52,6 @@
             line-height: 1.5;
         }
 
-        /* --- DE GIGANTISKE NØYTRALE KNAPPENE (Oppdatert med flexbox-sentrering) --- */
         .vote-btn {
             display: flex;
             align-items: center;
@@ -78,7 +74,6 @@
             user-select: none;
         }
 
-        /* Felles blåfarge for begge knappene */
         .btn-neutral {
             background: #3FA9F5;
             border-bottom: 10px solid #2478B4;
@@ -102,7 +97,6 @@
             line-height: 1.4;
         }
 
-        /* Takkemeldingen som dukker opp etter stemmegivning */
         #thank-you-screen {
             display: none;
             padding: 30px 10px;
@@ -149,7 +143,6 @@
                 En stang uten vekt, eller med vekt i toppen?
             </div>
             
-            <!-- KNAPP 1: UTEN VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('uten')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
@@ -162,7 +155,6 @@
                 <div class="btn-text">UTEN<br>VEKT</div>
             </button>
             
-            <!-- KNAPP 2: MED VEKT -->
             <button class="vote-btn btn-neutral" onclick="sendVote('med')">
                 <div class="btn-icon">
                     <svg viewBox="0 0 100 140" width="100" height="140" xmlns="http://www.w3.org/2000/svg">
@@ -198,10 +190,10 @@
 
     </div>
 
-    <!-- Firebase-logikken for mobilen -->
+    <!-- Firebase-logikken for mobilen (oppdatert med rundesjekk) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCh19JG3trLOAFjergZVvjUph0K-IjMeEk",
@@ -215,32 +207,48 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
+        let gjeldendeRunde = 1;
+        const rundeRef = ref(db, 'status/aktiv_runde');
 
-        // 1. Sjekk umiddelbart om brukeren allerede har stemt når siden lastes
-        if (localStorage.getItem('harBalanseStemt') === 'true') {
-            document.getElementById('vote-screen').style.display = 'none';
-            document.getElementById('thank-you-screen').style.display = 'block';
-            document.getElementById('thank-you-title-text').innerHTML = 'DU HAR<br>ALLEREDE STEMT!';
-        }
+        // Lytter live til hvilken runde som er i gang (styres av PC-en)
+        onValue(rundeRef, (snapshot) => {
+            gjeldendeRunde = snapshot.val() || 1;
+            
+            let lagretRunde = localStorage.getItem('sisteStemteRunde');
+            
+            // Hvis de allerede har stemt i DENNE runden, lås skjermen
+            if (lagretRunde == gjeldendeRunde) {
+                document.getElementById('vote-screen').style.display = 'none';
+                document.getElementById('thank-you-screen').style.display = 'block';
+                document.getElementById('thank-you-title-text').innerHTML = 'DU HAR<br>ALLEREDE STEMT!';
+            } else {
+                // Ny runde er oppdaget! Lås opp skjermen og vis knappene igjen
+                document.getElementById('vote-screen').style.display = 'block';
+                document.getElementById('thank-you-screen').style.display = 'none';
+            }
+        });
 
         // 2. Funksjonen som kjøres når noen trykker på en knapp
         window.sendVote = function(valg) {
-            // Dobbeltsjekk i tilfelle de prøver å trikse i koden
-            if (localStorage.getItem('harBalanseStemt') === 'true') return;
+            let lagretRunde = localStorage.getItem('sisteStemteRunde');
+            if (lagretRunde == gjeldendeRunde) return; // Avbryter triksing
 
-            // Skjul knappene, vis kvittering
+            // Skjul knappene, vis takke-melding
             document.getElementById('vote-screen').style.display = 'none';
             document.getElementById('thank-you-screen').style.display = 'block';
+            document.getElementById('thank-you-title-text').innerHTML = 'TAKK FOR<br>DIN STEMME!';
             
-            // Sett huskelappen i nettleseren!
-            localStorage.setItem('harBalanseStemt', 'true');
+            // Merk at de har stemt i akkurat denne runden
+            localStorage.setItem('sisteStemteRunde', gjeldendeRunde);
             
-            // Skyter stemmen opp til skyen
+            // Skyter stemmen opp til skyen, merket med riktig runde!
             push(ref(db, 'stemmer'), {
                 valg: valg,
+                runde: gjeldendeRunde,
                 tidspunkt: Date.now()
             }).then(() => {
-                console.log("Stemme registrert live: " + valg);
+                console.log("Stemme registrert i runde " + gjeldendeRunde + ": " + valg);
             }).catch((error) => {
                 console.error("Feil ved lagring i skyen:", error);
             });
